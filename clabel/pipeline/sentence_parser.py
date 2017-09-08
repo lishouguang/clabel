@@ -13,13 +13,13 @@ from clabel.config import NLP_SENT_SEPARATORS
 from clabel.nlp import parser
 from clabel.helper.utils import iter_file
 
-from .lexicon import IrrelevantLexicon
+from clabel.nlp.lexicon import irrelevantLexicon
 
 logger = logging.getLogger(__file__)
 
-__brands = IrrelevantLexicon.get_words('brand')
-__models = IrrelevantLexicon.get_words('model')
-__personals = IrrelevantLexicon.get_words('personal')
+__brands = irrelevantLexicon.get_words('brand')
+__models = irrelevantLexicon.get_words('model')
+__personals = irrelevantLexicon.get_words('personal')
 
 
 def pos(source_file, dest_file):
@@ -63,11 +63,11 @@ def parse(pinglun_file, dest_avro_file):
                     'sents': []
                 }
 
-                for relations in parser.parse2relations(pinglun):
+                for sentence in parser.parse2sents(pinglun):
                     tokens = set()
 
-                    for relation in relations:
-                        if relation.token1.word != 'ROOT':
+                    for relation in sentence.relations:
+                        if relation.token1.word != 'Root':
                             tokens.add(relation.token1)
                         tokens.add(relation.token2)
 
@@ -77,7 +77,7 @@ def parse(pinglun_file, dest_avro_file):
                         'sent': ''.join([t.word for t in tokens]),
                         'tokens': [{'word': t.word, 'pos': t.pos} for t in tokens],
                         'relations': [{'format': r.format, 'token1': r.token1.word, 'token2': r.token2.word} for r
-                                      in relations]
+                                      in sentence.relations]
                     })
 
                 yield pinglun_obj

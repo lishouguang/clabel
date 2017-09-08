@@ -1,27 +1,26 @@
 # coding: utf-8
 
-import os
 import logging
 import itertools
 
-from itertools import product
 from collections import Counter
 
-from clabel.helper import utils
-from clabel.pipeline import lexicon
-from clabel.config import RESOURCE_DIR
+from clabel.nlp.lexicon import irrelevantLexicon
 
 from clabel.nlp import parser
 
 logger = logging.getLogger(__file__)
 
+from clabel.pipeline.relation_rule import foRule
+from clabel.pipeline.relation_rule import ffRule
+from clabel.pipeline.relation_rule import ooRule
 
-def extract(O_seed, R, threshold=0.00001):
+
+def extract(O_seed, R):
     """
     使用Double Propagation提取特征词/评价词
     :param O_seed: 种子评价词
     :param R: 评论集（已经被处理过）
-    :param threshold: 阈值，0.00001表示10W条评论中至少出现一次
     :return:
     """
     logger.info('extract features/opinions by Double Propagation algorithm..')
@@ -63,15 +62,7 @@ def extract(O_seed, R, threshold=0.00001):
 
     fcounter, ocounter, rcount = get_count(F, O, R2)
 
-    utils.save_obj(F, os.path.join(RESOURCE_DIR, 'dp', 'dp.F'))
-    utils.save_obj(O, os.path.join(RESOURCE_DIR, 'dp', 'dp.O'))
-    utils.save_obj(fcounter, os.path.join(RESOURCE_DIR, 'dp', 'dp.fcounter'))
-    utils.save_obj(ocounter, os.path.join(RESOURCE_DIR, 'dp', 'dp.ocounter'))
-
-    F, O = prune_by_threshold(F, O, fcounter, ocounter, rcount * threshold)
-    F = prune_order_features(F, fcounter)
-
-    return F, O
+    return F, O, fcounter, ocounter, rcount
 
 
 def extract_feature_by_opinion(relations, O):
@@ -88,19 +79,10 @@ def extract_feature_by_opinion(relations, O):
         token1 = relation['token1']
         token2 = relation['token2']
 
-        # 手机(外形)很(漂亮)
-        if fmt == 'nsubj(VA, NN)':
-            if token1 in O:
-                features.add(token2)
+        feature, opinion = foRule.match(fmt, token1, token2)
 
-        if fmt == 'amod(NN, VA)':
-            if token2 in O:
-                features.add(token1)
-
-        # 这个手机有很(漂亮)的(外形)
-        if fmt == 'amod(NN, JJ)':
-            if token2 in O:
-                features.add(token1)
+        if opinion in O:
+            features.add(feature)
 
     return prune_features(features)
 
@@ -119,22 +101,13 @@ def extract_feature_by_feature(relations, F):
         token1 = relation['token1']
         token2 = relation['token2']
 
-        # 手机的(拍照)和(摄像)不错
-        if fmt == 'conj(NN, NN)':
-            if token1 in F:
-                features.add(token2)
-            if token2 in F:
-                features.add(token1)
+        feature1, feature2 = ffRule.match(fmt, token1, token2)
 
-        # (手机外形)不错
-        if fmt == 'compound:nn(NN, NN)':
-            if token1 in F or token2 in F:
-                features.add('%s_%s' % (token2, token1))
+        if feature1 in F:
+            features.add(feature2)
 
-        # (手机)的(外形)很漂亮
-        if fmt == 'nmod:assmod(NN, NN)':
-            if token1 in F or token2 in F:
-                features.add('%s_%s' % (token2, token1))
+        if feature2 in F:
+            features.add(feature1)
 
     return prune_features(features)
 
@@ -153,11 +126,14 @@ def extract_opinions_by_opinion(relations, O):
         token1 = relation['token1']
         token2 = relation['token2']
 
-        if fmt == 'dep(VA, VA)':
-            if token1 in O:
-                opinions.add(token2)
-            if token2 in O:
-                opinions.add(token1)
+        opinion1, opinion2 = ooRule.match(fmt, token1, token2)
+
+        if opinion1 in O:
+            opinions.add(opinion2)
+
+        if opinion2 in O:
+            opinions.add(opinion1)
+
     return opinions
 
 
@@ -175,17 +151,11 @@ def extract_opinions_by_feature(relations, F):
         token1 = relation['token1']
         token2 = relation['token2']
 
-        if fmt == 'nsubj(VA, NN)':
-            if token2 in F:
-                opinions.add(token1)
+        feature, opinion = foRule.match(fmt, token1, token2)
 
-        if fmt == 'amod(NN, VA)':
-            if token1 in F:
-                opinions.add(token2)
-
-        if fmt == 'amod(NN, JJ)':
-            if token1 in F:
-                opinions.add(token2)
+        if feature in F:
+            print 'extract_opinions_by_feature: ', opinion
+            opinions.add(opinion)
 
     return opinions
 
@@ -217,71 +187,6 @@ def prune_features(candidates):
     return features
 
 
-def prune_by_threshold(F, O, fcounter, ocounter, threshold):
-    logger.info('threshold pruning...')
-
-    l1 = len(F)
-    o1 = len(O)
-
-    for f in fcounter:
-        # if fcounter[f] == 1:
-        if fcounter[f] < threshold:
-            logger.debug('remove %s', f)
-            F.remove(f)
-
-    for o in ocounter:
-        if ocounter[o] == 1:
-            logger.debug('remove %s', o)
-            O.remove(o)
-
-    logger.info('once pruning features %d: %d -> %d ', l1 - len(F), l1, len(F))
-    logger.info('once pruning opinions %d: %d -> %d ', o1 - len(O), o1, len(O))
-
-    return F, O
-
-
-def prune_order_features(F, fcounter):
-    """
-    词序修正
-    :param fcounter:
-    :param F:
-    :return:
-    """
-
-    logger.info('order pruning...')
-
-    # 列出包含多项的频繁项集的所有排序可能
-    f_nps = []
-    for f in F:
-        nps = f.split('_')
-
-        if len(nps) > 1:
-            params = [nps for _ in range(len(nps))]
-            combinations = [x for x in product(*params) if len(set(x)) == len(nps)]
-            f_nps.append((f, combinations))
-
-    correct = dict()
-    # 统计每种可能出现的次数
-    for f, combinations in f_nps:
-        mmax = -1
-        for combin in combinations:
-            c = fcounter.get('_'.join(combin), 0)
-            if c > mmax:
-                correct[f] = '_'.join(combin)
-                mmax = c
-
-    f_pruned = set()
-    for f in F:
-        f_ordered = correct.get(f, f)
-
-        if f != f_ordered:
-            logger.debug('修正词序: %s -> %s' % (f, f_ordered))
-
-        f_pruned.add(f_ordered)
-
-    return f_pruned
-
-
 def get_count(F, O, R):
     rcount = 0
     fcounter = Counter()
@@ -310,13 +215,13 @@ def is_feature_phrase(np):
         # 词性判断，短语中不能包含形容词
         for f in [f1, f2]:
             print f
-            tokens = parser.pos_with_cache(f + '。')[0]
-            if len(tokens) > 2:
+            token = parser.pos_with_cache(f + '。')[0]
+            if len(token.word) > 2:
                 logging.debug('prune: [%s]-[%s]不是一个词' % (np, f))
                 return False
 
-            pos = tokens[0][1]
-            if pos not in {u'VV', u'NN'}:
+            pos = token.pos
+            if pos not in {u'v', u'n', u'a'}:
                 logging.debug('prune: [%s]-[%s/%s]特词性不对' % (np, f, pos))
                 return False
 
@@ -326,17 +231,5 @@ def is_feature_phrase(np):
 
 
 def is_meaningful_word(word):
-    return (not is_meaningless_word(word)) and (not is_spe_word(word))
+    return not irrelevantLexicon.is_irrelevant_word(word)
 
-
-def is_meaningless_word(word):
-    mwords = [u'的', u'了', u'我']
-    for mw in mwords:
-        if word.find(mw) != -1:
-            return True
-    return False
-
-
-def is_spe_word(word):
-    return lexicon.is_brand(word) or lexicon.is_model(word) or lexicon.is_personals(word) or lexicon.is_color(
-        word) or lexicon.is_place(word) or lexicon.is_date(word)

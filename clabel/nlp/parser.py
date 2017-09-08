@@ -252,7 +252,7 @@ class Sentence(object):
 
     def get_root_relation(self):
         for relation in self.__relations:
-            if relation.relation == 'root':
+            if relation.relation == 'HED':
                 return relation
 
         return None

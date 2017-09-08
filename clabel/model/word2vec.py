@@ -17,9 +17,6 @@ from gensim.models.word2vec import LineSentence
 logger = logging.getLogger(__file__)
 
 
-MODEL_PATH = os.path.join(RESOURCE_DIR, 'model', 'mobile.w2v')
-
-
 class MySentences(object):
 
     def __init__(self, source):
@@ -31,7 +28,10 @@ class MySentences(object):
                    if tp[1] != 'PU']
 
 
-def train(sentences):
+def train(sentences, model_file):
+    """
+    :rtype: Word2Vec
+    """
     workers = multiprocessing.cpu_count()
     window = 3
     model = Word2Vec(workers=workers, window=window)
@@ -48,13 +48,16 @@ def train(sentences):
 
     # 保存
     logger.info('save...')
-    model.save(MODEL_PATH)
+    model.save(model_file)
 
     return model
 
 
-def get():
-    model = Word2Vec.load(MODEL_PATH)
+def get(model_file):
+    """
+    :rtype: Word2Vec
+    """
+    model = Word2Vec.load(model_file)
     if isinstance(model, Word2Vec):
         return model
     return None

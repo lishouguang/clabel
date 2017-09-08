@@ -1,0 +1,8 @@
+COO(v, v) # 手机的照相和拍照不错
+COO(n, n)
+COO(v, n) # 手机的照相和外观不错
+COO(n, v)
+ATT(n, n) # 手机外形不错
+ATT(v, n) # 手机操作不错
+ATT(v, v)
+SBV(v, n) # 手机操作流畅

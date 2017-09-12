@@ -1,0 +1,4 @@
+SBV(漂亮/a, 东东/ns)
+SBV(好/a, 东东/ns)
+SBV(不错/a, 东东/ns)
+SBV(给力/a, 东东/ns)

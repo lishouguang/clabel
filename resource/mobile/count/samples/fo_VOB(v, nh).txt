@@ -1,0 +1,7 @@
+VOB(拍照/v, 美美/nh)
+VOB(反应/v, 卡顿/nh)
+VOB(配置/v, 超值/nh)
+VOB(运行/v, 卡顿/nh)
+VOB(操作/v, 卡顿/nh)
+VOB(操作/v, 舒心/nh)
+VOB(显示/v, 卡顿/nh)

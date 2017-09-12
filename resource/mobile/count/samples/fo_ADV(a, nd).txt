@@ -1,0 +1,7 @@
+ADV(滑/a, 背面/nd)
+ADV(粗糙/a, 背面/nd)
+ADV(漂亮/a, 背面/nd)
+ADV(好看/a, 背面/nd)
+ADV(惊艳/a, 背面/nd)
+ADV(不错/a, 背面/nd)
+ADV(舒服/a, 背面/nd)

@@ -1,0 +1,8 @@
+ATT(塑料/n, 背面/nd)
+ATT(摄像头/n, 背面/nd)
+ATT(宽度/n, 背面/nd)
+ATT(指纹/n, 背面/nd)
+ATT(面板/n, 背面/nd)
+ATT(外壳/n, 背面/nd)
+ATT(颜色/n, 背面/nd)
+ATT(皮质/n, 背面/nd)

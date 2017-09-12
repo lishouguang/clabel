@@ -1,0 +1,2 @@
+ATT(low/ws, 好/a)
+ATT(good/ws, 完美/a)

@@ -1,4 +1,10 @@
-SBV(a_o, v_f) #运行很流畅
-CMP(v_f, a_o) #运行流畅
 SBV(a_o, n_f) #外观漂亮
+SBV(a_o, v_f) #运行很流畅
+SBV(v_o, n_f)
+SBV(i_o, n_f)
 ATT(n_f, a_o) #漂亮的外壳
+ATT(v_f, a_o)
+CMP(v_f, a_o) #运行流畅
+ADV(a_o, n_f)
+COO(v_f, a_o)
+SBV(z_o, n_f)

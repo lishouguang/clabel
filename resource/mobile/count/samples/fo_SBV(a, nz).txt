@@ -1,0 +1,4 @@
+SBV(好/a, 高通/nz)
+SBV(差/a, 高通/nz)
+SBV(不错/a, 海思/nz)
+SBV(好/a, 骁龙/nz)

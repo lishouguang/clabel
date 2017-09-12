@@ -1,0 +1,4 @@
+ATT(wifi/ws, 强大/a)
+ATT(ROM/ws, 遗憾/a)
+ATT(wifi/ws, 流畅/a)
+ATT(wifi/ws, 好/a)

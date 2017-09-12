@@ -1,0 +1,6 @@
+SBV(nice/ws, 手机/n)
+SBV(low/ws, 颜色/n)
+SBV(ok/ws, 速度/n)
+SBV(low/ws, 包装/n)
+SBV(nice/ws, 手感/n)
+SBV(low/ws, 分辨率/n)

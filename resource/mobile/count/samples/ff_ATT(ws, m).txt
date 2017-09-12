@@ -1,0 +1,4 @@
+ATT(CPU/ws, 820/m)
+ATT(CPU/ws, 650/m)
+ATT(cpu/ws, 801/m)
+ATT(CPU/ws, 652/m)

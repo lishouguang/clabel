@@ -1,0 +1,7 @@
+ATT(美/j, 价/n)
+ATT(美/j, 宝贝/n)
+ATT(美/j, 手机/n)
+ATT(美/j, 界面/n)
+ATT(美/j, 外形/n)
+ATT(美/j, 外观/n)
+ATT(美/j, 颜色/n)

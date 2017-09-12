@@ -1,0 +1,4 @@
+VOB(喜欢/v, 美美/nh)
+VOB(方便/v, 小巧/nh)
+VOB(扭/v, 卡顿/nh)
+VOB(卡/v, 顿/nh)

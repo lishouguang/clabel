@@ -1,0 +1,4 @@
+ATT(背面/nd, 黑边/n)
+ATT(黑边/nd, 手机/n)
+ATT(东西/nd, 垃圾/n)
+ATT(黑边/nd, 屏幕/n)

@@ -1,21 +1,22 @@
 # coding: utf-8
 
 import re
+import codecs
 import logging
-import HTMLParser
+import html.parser
 
 from clabel.helper.utils import iter_file
 
 logger = logging.getLogger(__file__)
 
 
-html_parser = HTMLParser.HTMLParser()
+html_parser = html.parser.HTMLParser()
 
 
 def clean_file(source_file, dest_file):
     logger.info('clean pinglun run...')
 
-    with open(dest_file, 'wb') as f:
+    with codecs.open(dest_file, 'w', encoding='utf-8') as f:
         for line in iter_file(source_file):
             for sent in clean_txt(line):
                 f.write('%s\n' % sent)
@@ -23,7 +24,7 @@ def clean_file(source_file, dest_file):
 
 def clean_txt(txt):
 
-    txt = txt.strip().decode('utf-8')
+    txt = txt.strip()
 
     # 还原html转义字符，&hellip; => ……
     txt = html_parser.unescape(txt)
@@ -44,7 +45,7 @@ def clean_txt(txt):
 
 def clean_txt2(txt):
 
-    txt = txt.strip().decode('utf-8')
+    txt = txt.strip()
 
     # 还原html转义字符，&hellip; => ……
     txt = html_parser.unescape(txt)
@@ -61,9 +62,9 @@ def clean_txt2(txt):
     return [sent for sent in sents if is_meaningful(sent)]
 
 
-_SENT_CHAR_SET = u'[0-9a-zA-Z\u4e00-\u9fa5_-]'
-_rule1 = re.compile(u'((?:%s+，)*%s+[。！；？?])' % (_SENT_CHAR_SET, _SENT_CHAR_SET))
-_rule2 = re.compile(u'((?:%s+，)*%s+)' % (_SENT_CHAR_SET, _SENT_CHAR_SET))
+_SENT_CHAR_SET = '[0-9a-zA-Z\u4e00-\u9fa5_-]'
+_rule1 = re.compile('((?:%s+，)*%s+[。！；？?])' % (_SENT_CHAR_SET, _SENT_CHAR_SET))
+_rule2 = re.compile('((?:%s+，)*%s+)' % (_SENT_CHAR_SET, _SENT_CHAR_SET))
 
 
 def extract_standard_sentences(line):
@@ -101,10 +102,10 @@ def is_meaningful(sent):
     """
 
     # 必须至少包含两个连续的中文（一个词）
-    if not re.match(ur'.*[\u4e00-\u9fa5]{2,999}.*', sent):
+    if not re.match(r'.*[\u4e00-\u9fa5]{2,999}.*', sent):
         return False
 
-    words = re.findall(ur'[\u4e00-\u9fa5]', sent)
+    words = re.findall(r'[\u4e00-\u9fa5]', sent)
 
     # 必须包含至少两个不同的字
     if len(set(words)) < 2:
@@ -117,4 +118,4 @@ def is_meaningful(sent):
     return True
 
 
-SYS_COMMENTS = [u'此用户没有填写评论', u'好评']
+SYS_COMMENTS = ['此用户没有填写评论', '好评']

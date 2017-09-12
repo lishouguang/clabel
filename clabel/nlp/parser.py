@@ -3,7 +3,7 @@
 import os
 import re
 
-import Queue
+import queue
 import logging
 
 from pyltp import Parser
@@ -28,7 +28,7 @@ def ssplit(txt):
     :return: [[word1, word2, ...], [word3, word4, ...], ...]
     """
 
-    return [x for x in re.split(ur'[\s,，.。:：!！?？、]', utils.str2unicode(txt)) if x]
+    return [x for x in re.split(r'[\s,，.。:：!！?？、]', txt) if x]
 
 
 _segmentor = Segmentor()
@@ -42,7 +42,7 @@ def segment(txt):
     :param txt: 文本
     :return: [word1, word2, ...]
     """
-    return list(_segmentor.segment(utils.unicode2str(txt)))
+    return list(_segmentor.segment(txt))
 
 
 _tagger = Postagger()
@@ -56,11 +56,11 @@ def pos(text):
     :param text:
     :return: [Token1, Token2, ...]
     """
-    tokenized = segment(utils.unicode2str(text))
+    tokenized = segment(text)
     tags = _tagger.postag(tokenized)
 
     result = []
-    for i, w, t in zip(range(len(tokenized)), tokenized, tags):
+    for i, w, t in zip(list(range(len(tokenized))), tokenized, tags):
         result.append(Token(w, t, i))
 
     return result
@@ -109,7 +109,7 @@ def parse2relations(text):
     arcs = _parser.parse(words, tags)
 
     result = []
-    for i, w, p, a in zip(range(len(words)), words, tags, arcs):
+    for i, w, p, a in zip(list(range(len(words))), words, tags, arcs):
         head_token = Token(words[a.head - 1] if a.head > 0 else 'Root', tags[a.head - 1] if a.head > 0 else 'Root', a.head-1)
         dep_token = Token(w, p, i)
 
@@ -150,7 +150,7 @@ def parse2sents(txt):
 
 
 __pos_cache = dict()
-__queue = Queue.Queue(500000)
+__queue = queue.Queue(500000)
 
 
 def _get_from_cache(text):
@@ -241,9 +241,6 @@ class Sentence(object):
             return self.__tokens[id_or_word - 1]
 
         if isinstance(id_or_word, str):
-            id_or_word = id_or_word.decode('utf-8')
-
-        if isinstance(id_or_word, unicode):
             for token in self.__tokens:
                 if token.word == id_or_word:
                     return token

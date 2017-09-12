@@ -14,9 +14,9 @@ class MyTestCase(unittest.TestCase):
         b = {}
 
         if b:
-            print 'b is blank'
+            print('b is blank')
         else:
-            print 'b is not blank'
+            print('b is not blank')
 
 
 if __name__ == '__main__':

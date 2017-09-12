@@ -33,7 +33,7 @@ def create(features, model, preference=-30):
         clusters[centers[label]].add(feature)
 
     # 去除只有一个词的类
-    for cls in clusters.keys():
+    for cls in list(clusters.keys()):
         if len(clusters[cls]) == 1:
             del clusters[cls]
 
@@ -61,7 +61,7 @@ def create2(features, n_clusters=200):
         cluster_features[l].append(f)
         cluster_X[l].append(x)
 
-    for l, x in cluster_X.items():
+    for l, x in list(cluster_X.items()):
         i = np.argmax(cosine_similarity(centers[l], cluster_X[l]))
         cluster_centers[l] = cluster_features[l][i]
 

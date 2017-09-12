@@ -13,20 +13,20 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(True)
 
         psentence = sp.PSentence()
-        psentence.sent = u'手机的屏幕不错'
-        psentence.token.extend([u'手机', u'的', u'屏幕', u'不错'])
+        psentence.sent = '手机的屏幕不错'
+        psentence.token.extend(['手机', '的', '屏幕', '不错'])
 
         relation = psentence.relation.add()
-        relation.format = u'ff'
-        relation.token1 = u'手机'
-        relation.token2 = u'屏幕'
+        relation.format = 'ff'
+        relation.token1 = '手机'
+        relation.token2 = '屏幕'
 
         relation2 = psentence.relation.add()
-        relation2.format = u'ff2'
-        relation2.token1 = u'手机'
-        relation2.token2 = u'性能'
+        relation2.format = 'ff2'
+        relation2.token1 = '手机'
+        relation2.token2 = '性能'
 
-        print psentence.IsInitialized()
+        print(psentence.IsInitialized())
 
 
 if __name__ == '__main__':

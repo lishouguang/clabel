@@ -99,10 +99,10 @@ def correct_pos(source_file, dest_file):
     with open(dest_file, 'wb') as f:
         for line in iter_file(source_file):
             new_tps = list()
-            for tp in re.findall(ur'(\S+)%s(\S+)' % NLP_POS_SEPARATOR, line.decode('utf-8')):
+            for tp in re.findall(r'(\S+)%s(\S+)' % NLP_POS_SEPARATOR, line):
                 new_tp = tp
 
-                for k, v in correct_map.items():
+                for k, v in list(correct_map.items()):
                     if tp[0] in v:
                         new_tp = (tp[0], k)
 

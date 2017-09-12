@@ -16,7 +16,7 @@ class MyTestCase(unittest.TestCase):
     def test_read(self):
         self.assertTrue(True)
 
-        excel_file = os.path.join(RESOURCE_DIR, 'general', u'情感词汇本体.xlsx')
+        excel_file = os.path.join(RESOURCE_DIR, 'general', '情感词汇本体.xlsx')
         wb = openpyxl.load_workbook(excel_file)
         sheet = wb.active
 
@@ -40,7 +40,7 @@ class MyTestCase(unittest.TestCase):
                 words[polar_map.get(main_polar, 3)].add(row[0].value)
 
         for word in words['neg']:
-            print word
+            print(word)
 
 
 if __name__ == '__main__':

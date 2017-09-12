@@ -27,7 +27,7 @@ class MyTestCase(unittest.TestCase):
 
 
 def extract_label(features, txt):
-    for sentence in parser.parse2sents(utils.unicode2str(txt)):
+    for sentence in parser.parse2sents(txt):
         labels = extract_stems(features, sentence)
         for label in labels:
             logger.debug('标签主干：%s', label.stem)
@@ -38,7 +38,7 @@ def extract_label(features, txt):
             extract_fmodifier(label, sentence)
             logger.debug('提取出的评价对象修饰语：%s', label.fmodifier)
 
-            print label
+            print(label)
 
 
 def extract_fmodifier(label, sentence):

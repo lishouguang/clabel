@@ -85,8 +85,6 @@ def normalize_feature(feature):
     :param feature:
     :return:
     """
-    feature = utils.convert2unicode(feature)
-
     nfeature = FormattedFeature.get_instance().get_head(feature)
     if nfeature is None:
         nfeature = feature

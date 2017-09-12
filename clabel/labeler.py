@@ -227,8 +227,6 @@ class LabelExtractor(object):
         :param feature:
         :return:
         """
-        feature = utils.convert2unicode(feature)
-
         nfeature = self._fFeature.get_head(feature)
         if nfeature is None:
             nfeature = feature

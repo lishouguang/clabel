@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
 
         itemset = '手机 屏幕'
         sentence = '不错，是手机屏幕正品！'
-        print prune._is_compact(itemset, sentence)
+        print(prune._is_compact(itemset, sentence))
 
     def test_redundant_prune(self):
         self.assertTrue(True)
@@ -40,8 +40,8 @@ class MyTestCase(unittest.TestCase):
         tree = {'手机 拍照 功能': {'手机 拍照': {'拍照': {}}, '功能': {}}}
         paths = []
         find_paths(tree, '屏幕', paths)
-        print paths
-        print '/'.join(paths)
+        print(paths)
+        print('/'.join(paths))
 
     def test_tree_itemset(self):
         self.assertTrue(True)
@@ -67,7 +67,7 @@ class MyTestCase(unittest.TestCase):
         frequents = utils.read_obj(os.path.join(RESOURCE_DIR, 'mobile.itemsets'))
         itemsets = [itemset for itemset, _ in frequents]
         for x in prune2._find_super_itemsets(itemsets, '手机'):
-            print x
+            print(x)
 
     def test_redundant_prune2(self):
         self.assertTrue(True)
@@ -82,7 +82,7 @@ class MyTestCase(unittest.TestCase):
 
         counter = utils.read_obj(os.path.join(RESOURCE_DIR, 'mobile.prune.psupport'))
         for x, c in counter.most_common():
-            print x, c
+            print(x, c)
 
     def test_order_prune(self):
         self.assertTrue(True)
@@ -94,7 +94,7 @@ class MyTestCase(unittest.TestCase):
         tx_file = os.path.join(RESOURCE_DIR, 'mobile.sample.tx.basket')
         itemsets = prune2.order_prune(itemsets, tx_file)
         for x in itemsets:
-            print x
+            print(x)
 
     def test_order_prune_x(self):
         self.assertTrue(True)
@@ -108,7 +108,7 @@ class MyTestCase(unittest.TestCase):
 
         features = prune.order_prune(features, os.path.join(RESOURCE_DIR, 'mobile.sample.tx.basket.1'))
         for f in features:
-            print f
+            print(f)
 
 
 def get_features():
@@ -117,8 +117,8 @@ def get_features():
 
 
 def print_tree(tree, level):
-    for item, children in tree.items():
-        print '-' * level * 4 + item
+    for item, children in list(tree.items()):
+        print('-' * level * 4 + item)
 
         print_tree(children, level + 1)
 
@@ -131,7 +131,7 @@ def put(tree, paths, item):
 
 
 def find_paths(tree, item, paths=[]):
-    for key, children in tree.items():
+    for key, children in list(tree.items()):
         if set(item.split()).issubset(set(key.split())):
             paths.append(key)
             find_paths(children, item, paths)

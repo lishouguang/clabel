@@ -18,14 +18,14 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(True)
 
         model = w2v.get()
-        for token, similarity in model.most_similar(positive=[u'屏幕']):
-            print token, similarity
+        for token, similarity in model.most_similar(positive=['屏幕']):
+            print(token, similarity)
 
     def test_word2vec_vec(self):
         self.assertTrue(True)
 
         model = w2v.get()
-        print model[u'屏幕']
+        print(model['屏幕'])
 
 
 if __name__ == '__main__':

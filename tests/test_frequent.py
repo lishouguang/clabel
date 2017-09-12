@@ -19,22 +19,22 @@ class MyTestCase(unittest.TestCase):
 
         frequents = utils.read_obj(os.path.join(RESOURCE_DIR, 'mobile.itemsets'))
         for itemset, support in frequents:
-            print itemset, support
-        print len(frequents)
+            print(itemset, support)
+        print(len(frequents))
 
     def test_frequent_pruned(self):
         self.assertTrue(True)
 
         frequents = utils.read_obj(os.path.join(RESOURCE_DIR, 'mobile.itemsets.pruned.1'))
         for f in frequents:
-            print type(f)
+            print(type(f))
 
     def test_frequent(self):
         self.assertTrue(True)
         tx_file = os.path.join(RESOURCE_DIR, 'mobile.sample.tx.basket')
         frequents = fq.create(tx_file, min_support=FREQUENT_MIN_SUPPORT)
         for itemset, support in frequents:
-            print itemset, support
+            print(itemset, support)
 
 
 if __name__ == '__main__':

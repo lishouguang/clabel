@@ -4,8 +4,8 @@ import os
 import sys
 import logging.config
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
 
 APP_DIR = os.path.dirname(os.path.dirname(__file__))
 ROOT_DIR = os.path.join(APP_DIR, 'clabel')
@@ -28,9 +28,9 @@ FREQUENT_FEATURE_POSES = ['NN']
 # 无关词
 LEXICON_IRRELEVANT_WORDS_DIR = os.path.join(RESOURCE_DIR, 'lexicon', 'irrelevant')
 # 情感固定的通用情感词
-LEXICON_FIXED_SENTIMENT_WORDS_FILE = os.path.join(RESOURCE_DIR, 'lexicon', 'fixed_sentiment', u'情感词汇本体.xlsx')
+LEXICON_FIXED_SENTIMENT_WORDS_FILE = os.path.join(RESOURCE_DIR, 'lexicon', 'fixed_sentiment', '情感词汇本体.xlsx')
 # 程度词词库
-LEXICON_DEGREE_WORDS_FILE = os.path.join(RESOURCE_DIR, 'lexicon', 'degree', u'程度词.txt')
+LEXICON_DEGREE_WORDS_FILE = os.path.join(RESOURCE_DIR, 'lexicon', 'degree', '程度词.txt')
 
 CATEGORY = 'mobile'
 

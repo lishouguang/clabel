@@ -14,13 +14,13 @@ class MyTestCase(unittest.TestCase):
 
         db.insertOrUpdate('屏幕', '花屏', '-')
 
-        print db.query('屏幕', '花屏2')
+        print(db.query('屏幕', '花屏2'))
 
     def test_all(self):
         self.assertTrue(True)
 
         for context, opinion, polar in db.queryAll():
-            print context, opinion, polar
+            print(context, opinion, polar)
 
     def test_delete(self):
         self.assertTrue(True)

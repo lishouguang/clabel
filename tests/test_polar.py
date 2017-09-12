@@ -20,7 +20,7 @@ class MyTestCase(unittest.TestCase):
 
             polar = lexicon.get_polar(word)
             if polar == 'x':
-                print word, polar
+                print(word, polar)
 
 
 if __name__ == '__main__':

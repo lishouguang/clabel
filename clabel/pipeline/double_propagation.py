@@ -154,7 +154,7 @@ def extract_opinions_by_feature(relations, F):
         feature, opinion = foRule.match(fmt, token1, token2)
 
         if feature in F:
-            print 'extract_opinions_by_feature: ', opinion
+            print('extract_opinions_by_feature: ', opinion)
             opinions.add(opinion)
 
     return opinions
@@ -214,14 +214,14 @@ def is_feature_phrase(np):
 
         # 词性判断，短语中不能包含形容词
         for f in [f1, f2]:
-            print f
+            print(f)
             token = parser.pos_with_cache(f + '。')[0]
             if len(token.word) > 2:
                 logging.debug('prune: [%s]-[%s]不是一个词' % (np, f))
                 return False
 
             pos = token.pos
-            if pos not in {u'v', u'n', u'a'}:
+            if pos not in {'v', 'n', 'a'}:
                 logging.debug('prune: [%s]-[%s/%s]特词性不对' % (np, f, pos))
                 return False
 

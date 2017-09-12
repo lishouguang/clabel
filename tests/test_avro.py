@@ -51,7 +51,7 @@ class MyTestCase(unittest.TestCase):
         with open(data_file, 'rb') as df:
             reader = DataFileReader(df, DatumReader())
             for user in reader:
-                print user
+                print(user)
             reader.close()
 
     def test_x(self):
@@ -80,8 +80,8 @@ class MyTestCase(unittest.TestCase):
                 for sent in pinglun['sents']:
                     i += 1
                     # if i < 1000:
-                    print sent['sent']
-                    print sent['relations']
+                    print(sent['sent'])
+                    print(sent['relations'])
 
 if __name__ == '__main__':
     unittest.main()

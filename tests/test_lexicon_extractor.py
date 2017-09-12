@@ -20,7 +20,7 @@ class MyTestCase(unittest.TestCase):
         cluster_features, opinions = lexicon_extractor.extract(pinglun_file, O_seeds)
 
         for cls in cluster_features:
-            print '%s --- %s' % (cls, ' '.join(cluster_features[cls]))
+            print('%s --- %s' % (cls, ' '.join(cluster_features[cls])))
 
         # utils.save_obj(cluster_features, os.path.join(RESOURCE_DIR, 'dp', 'dp.CF'))
         # utils.save_obj(opinions, os.path.join(RESOURCE_DIR, 'dp', 'dp.O'))
@@ -31,7 +31,7 @@ def get_opinion_seeds():
     获取种子评价词
     :return:
     """
-    O = {u'不错', u'漂亮', u'流畅', u'方便', u'高', u'持久'}
+    O = {'不错', '漂亮', '流畅', '方便', '高', '持久'}
     return O
 
 

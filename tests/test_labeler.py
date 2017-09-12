@@ -17,7 +17,7 @@ class MyTestCase(unittest.TestCase):
 
         pinglun_file = os.path.join(RESOURCE_DIR, 'pinglun', 'mobile.sample.min')
         workspace = os.path.join(RESOURCE_DIR, 'tmp', 'test1')
-        O_seeds = {u'不错', u'漂亮', u'流畅', u'方便', u'高', u'持久'}
+        O_seeds = {'不错', '漂亮', '流畅', '方便', '高', '持久'}
 
         lexicon_extractor = LexiconExtractor(workspace=workspace)
         lexicon_extractor.run(pinglun_file, O_seeds)
@@ -31,7 +31,8 @@ class MyTestCase(unittest.TestCase):
         label_extractor = LabelExtractor(feature_file)
         labels = label_extractor.extract_from_txt(txt)
         for label in labels:
-            print label
+            print(label)
+
 
 if __name__ == '__main__':
     unittest.main()

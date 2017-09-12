@@ -17,9 +17,9 @@ class MyTestCase(unittest.TestCase):
     def test_formattedfeature(self):
         self.assertTrue(True)
 
-        print lextractor.FormattedFeature.get_instance()
-        print lextractor.FormattedFeature.get_instance()
-        print lextractor.FormattedFeature.get_instance()
+        print(lextractor.FormattedFeature.get_instance())
+        print(lextractor.FormattedFeature.get_instance())
+        print(lextractor.FormattedFeature.get_instance())
 
 
 if __name__ == '__main__':

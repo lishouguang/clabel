@@ -28,7 +28,7 @@ def get_polar(word):
         good_hits, poor_hits = search_single()
         logger.debug('good_hits: %d, poor_hits: %d' % (good_hits, poor_hits))
 
-        phrase_good_hits, phrase_poor_hits = search_join(utils.convert2unicode(word))
+        phrase_good_hits, phrase_poor_hits = search_join(word)
         logger.debug('word: %s, phrase_good_hits: %d, phrase_poor_hits: %d' % (word, phrase_good_hits, phrase_poor_hits))
 
         if phrase_poor_hits == 0 or phrase_good_hits == 0:
@@ -52,7 +52,7 @@ def search_single():
 
 
 def search_join(word):
-    response = requests.post(PMI_SEARCH_URL % 'join', data={'q': utils.convert2unicode(word)}).json()
+    response = requests.post(PMI_SEARCH_URL % 'join', data={'q': word}).json()
     good, poor = response['good'], response['poor']
     return good, poor
 

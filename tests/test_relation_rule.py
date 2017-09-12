@@ -22,16 +22,16 @@ class MyTestCase(unittest.TestCase):
         templates = ['SBV(a_o, v_f)']
 
         pattern = r'^(.+)\((.+)_(.+), (.+)_(.+)\)$'
-        print re.match(pattern, templates[0])
+        print(re.match(pattern, templates[0]))
         xx = re.findall(pattern, templates[0])
-        print xx
+        print(xx)
 
     def test_1(self):
         self.assertTrue(True)
 
         fmt = 'ATT(n, n)'
-        token1 = u'外形'
-        token2 = u'手机'
+        token1 = '外形'
+        token2 = '手机'
 
         # rt = FORuleTemplate(os.path.join(RESOURCE_DIR, 'relation_rule', 'fo.rule'))
         # feature, opinion = rt.match(fmt, token1, token2)
@@ -49,7 +49,7 @@ class MyTestCase(unittest.TestCase):
         # print feature1, feature2
 
         modifier, opinion = moRule.match(fmt, token1, token2)
-        print modifier, opinion
+        print(modifier, opinion)
 
 if __name__ == '__main__':
     unittest.main()

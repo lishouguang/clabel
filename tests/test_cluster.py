@@ -44,7 +44,7 @@ class MyTestCase(unittest.TestCase):
             cluster_features[l].append(f)
             cluster_X[l].append(x)
 
-        for l, x in cluster_X.items():
+        for l, x in list(cluster_X.items()):
             i = np.argmax(cosine_similarity(centers[l], cluster_X[l]))
             cluster_centers[l] = cluster_features[l][i]
 
@@ -59,7 +59,7 @@ class MyTestCase(unittest.TestCase):
 
         features, X = get_features_X(model)
         for f in features:
-            print f
+            print(f)
 
     def test_ap_features(self):
         self.assertTrue(True)
@@ -83,7 +83,7 @@ class MyTestCase(unittest.TestCase):
             clusters[label].add(feature)
 
         for label in centers:
-            print '%s --- %s' % (centers[label], ' '.join(clusters[label]))
+            print('%s --- %s' % (centers[label], ' '.join(clusters[label])))
 
     def test_ap_features2(self):
         self.assertTrue(True)
@@ -96,7 +96,7 @@ class MyTestCase(unittest.TestCase):
         labels = ap.fit_predict(X)
 
         n_cluster = len(ap.cluster_centers_indices_)
-        print 'n_cluster: ', n_cluster
+        print('n_cluster: ', n_cluster)
 
         # for c in ap.cluster_centers_indices_:
         #     print c, features[c]
@@ -111,9 +111,9 @@ class MyTestCase(unittest.TestCase):
         plt.clf()  # 清空当前的图形
 
         colors = cycle('bgrcmykbgrcmykbgrcmykbgrcmyk')
-        colors = [c for _, c in zip(range(n_cluster), colors)]
-        print len(colors)
-        print colors
+        colors = [c for _, c in zip(list(range(n_cluster)), colors)]
+        print(len(colors))
+        print(colors)
 
         tsne = TSNE(n_components=2)
         X_2d = tsne.fit_transform(X)
@@ -153,8 +153,8 @@ class MyTestCase(unittest.TestCase):
         dbscan = DBSCAN(metric='precomputed', eps=eps)
 
         labels = dbscan.fit_predict(X)
-        print labels
-        print 'eps: %f, n_cluster: %d' % (eps, len(set(labels)))
+        print(labels)
+        print('eps: %f, n_cluster: %d' % (eps, len(set(labels))))
 
     def test_my_cluster(self):
         self.assertTrue(True)

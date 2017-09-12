@@ -39,9 +39,9 @@ class MyTestCase(unittest.TestCase):
 
         # R = ['价格实惠']
 
-        print '单句总数：', len(R)
+        print('单句总数：', len(R))
 
-        O = {u'不错', u'漂亮', u'流畅', u'方便', u'高', u'持久'}
+        O = {'不错', '漂亮', '流畅', '方便', '高', '持久'}
 
         F, O_expanded = double_propagation.extract(O, R, parsed=True)
         write_file(os.path.join(RESOURCE_DIR, 'dp', 'dp.features'), F)
@@ -52,27 +52,27 @@ class MyTestCase(unittest.TestCase):
 
         fcounter = read_obj(os.path.join(RESOURCE_DIR, 'dp', 'feature.counter'))
         for f, c in fcounter.most_common():
-            print f, c
+            print(f, c)
 
     def test_show_opinion_counter(self):
         self.assertTrue(True)
 
         ocounter = read_obj(os.path.join(RESOURCE_DIR, 'dp', 'opinion.counter'))
         for o, c in ocounter.most_common():
-            print o, c
+            print(o, c)
 
     def test_prune_features(self):
         self.assertTrue(True)
 
-        features = {u'服务_非常好', u'手机', u'sudu_速度'}
+        features = {'服务_非常好', '手机', 'sudu_速度'}
         features = double_propagation.prune_features(features)
         for f in features:
-            print f
+            print(f)
 
     def test_prune_order_features(self):
         self.assertTrue(True)
 
-        double_propagation.prune_order_features([u'手机_屏幕', u'手机'], None)
+        double_propagation.prune_order_features(['手机_屏幕', '手机'], None)
 
     def test_prune_xx(self):
         self.assertTrue(True)
@@ -82,29 +82,29 @@ class MyTestCase(unittest.TestCase):
         fcounter = read_obj(os.path.join(RESOURCE_DIR, 'dp', 'dp.fcounter'))
         ocounter = read_obj(os.path.join(RESOURCE_DIR, 'dp', 'dp.ocounter'))
 
-        print 'len1: ', len(F)
+        print('len1: ', len(F))
 
         F, O = double_propagation.prune_by_threshold(F, O, fcounter, ocounter)
 
-        print 'len2: ', len(F)
+        print('len2: ', len(F))
 
         F = double_propagation.prune_order_features(F, fcounter)
 
-        print 'len3: ', len(F)
+        print('len3: ', len(F))
 
         save_obj(F, os.path.join(RESOURCE_DIR, 'dp', 'dp.F.pruned'))
 
     def test_is_feature(self):
         self.assertTrue(True)
 
-        fs = [u'模式']
+        fs = ['模式']
         if len(fs) == 1 and len(fs[0]) > 1 and double_propagation.is_meaningful_word(fs[0]):
-            print 'yes'
+            print('yes')
         elif fs:
-            print 'no'
+            print('no')
 
-        print double_propagation.is_meaningful_word(fs[0])
-        print double_propagation.is_spe_word(fs[0])
+        print(double_propagation.is_meaningful_word(fs[0]))
+        print(double_propagation.is_spe_word(fs[0]))
 
     def test_fcounter(self):
         self.assertTrue(True)

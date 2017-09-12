@@ -16,42 +16,42 @@ class MyTestCase(unittest.TestCase):
 
     def test_ssplit(self):
         self.assertTrue(True)
-        txt = u'手机屏幕很大。'
+        txt = '手机屏幕很大。'
         for sent in parser.ssplit(txt):
-            print 'sent: ', sent
+            print('sent: ', sent)
 
     def test_token(self):
         self.assertTrue(True)
         for t in parser.segment('触摸屏效果还不错'):
-            print t
+            print(t)
 
     def test_pos(self):
         self.assertTrue(True)
 
-        tokens = parser.pos(u'配件太少。')
+        tokens = parser.pos('配件太少。')
         for token in tokens:
-            print token
+            print(token)
 
     def test_parse(self):
         self.assertTrue(True)
 
         relations = parser.parse2relations('触摸屏效果还不错')
         for relation in relations:
-            print relation
+            print(relation)
 
     def test_parse_cache(self):
         self.assertTrue(True)
 
         feature = '运行流畅'
         posed = parser.pos_with_cache(feature.replace('_', ''))
-        print posed
+        print(posed)
 
     def test_parse_sentence(self):
         self.assertTrue(True)
 
-        sent_txt = u'手机屏幕很大。'
+        sent_txt = '手机屏幕很大。'
         for sent in parser.parse2sents(sent_txt):
-            print 'sent: ', sent
+            print('sent: ', sent)
 
 
 if __name__ == '__main__':

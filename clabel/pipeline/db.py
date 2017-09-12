@@ -23,10 +23,6 @@ with sqlite3.connect(DB_FILE) as _conn:
 
 
 def insertOrUpdate(context, opinion, polar):
-    context = utils.convert2unicode(context)
-    opinion = utils.convert2unicode(opinion)
-    polar = utils.convert2unicode(polar)
-
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
         cursor.execute("select count(1) from polar where context=? and opinion=?", (context, opinion))
@@ -40,9 +36,6 @@ def insertOrUpdate(context, opinion, polar):
 
 
 def query(context, opinion):
-    context = utils.convert2unicode(context)
-    opinion = utils.convert2unicode(opinion)
-
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
         cursor.execute("select polar from polar where context=? and opinion=?", (context, opinion))
@@ -61,9 +54,6 @@ def queryAll():
 
 
 def delete(context, opinion):
-    context = utils.convert2unicode(context)
-    opinion = utils.convert2unicode(opinion)
-
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
         cursor.execute("delete from polar where context=? and opinion=?", (context, opinion))

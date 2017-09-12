@@ -25,7 +25,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(True)
 
         for txt in clean.clean_txt('质量还行。'):
-            print txt
+            print(txt)
 
 
 if __name__ == '__main__':

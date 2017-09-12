@@ -17,23 +17,23 @@ class MyTestCase(unittest.TestCase):
 
         itemsets = utils.read_obj(os.path.join(RESOURCE_DIR, 'mobile.itemsets.pruned.1'))
         for itemset in itemsets:
-            print itemset
+            print(itemset)
 
     def test_show(self):
         self.assertTrue(True)
 
         features = utils.read_obj(os.path.join(RESOURCE_DIR, 'dp', 'dp.F.pruned'))
         for feature in features:
-            print feature
+            print(feature)
 
-        print len(features)
+        print(len(features))
 
     def test_fcounter(self):
         self.assertTrue(True)
 
         fcounter = utils.read_obj(os.path.join(RESOURCE_DIR, 'dp', 'dp.fcounter'))
         for x, c in fcounter.most_common(99999):
-            print x, c
+            print(x, c)
 
 
 if __name__ == '__main__':

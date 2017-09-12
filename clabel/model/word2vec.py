@@ -24,7 +24,7 @@ class MySentences(object):
 
     def __iter__(self):
         for line in utils.iter_file(self.__source):
-            yield [tp[0] for tp in re.findall(ur'(\S+)%s(\S+)' % NLP_POS_SEPARATOR, line.decode('utf-8'))
+            yield [tp[0] for tp in re.findall(r'(\S+)%s(\S+)' % NLP_POS_SEPARATOR, line)
                    if tp[1] != 'PU']
 
 

@@ -24,7 +24,7 @@ class IrrelevantLexicon(object):
         '''读取文件，加载词'''
         for word_file in os.listdir(lexicon_dir):
             word_type = word_file.replace('.txt', '')
-            words = set([w.decode('utf-8') for w in utils.read_file(os.path.join(lexicon_dir, word_file)) if w])
+            words = set([w for w in utils.read_file(os.path.join(lexicon_dir, word_file)) if w])
             self._lexicon[word_type] = words
 
     def is_irrelevant_word(self, word):
@@ -33,7 +33,6 @@ class IrrelevantLexicon(object):
         :param word:
         :return:
         """
-        word = utils.convert2unicode(word)
         return self.is_brand(word) or self.is_model(word) or self.is_personals(
             word) or self.is_color(word) or self.is_place(
             word) or self.is_position(word) or self.is_date(word)
@@ -45,19 +44,19 @@ class IrrelevantLexicon(object):
         return (word in self._lexicon['model']) or (re.match(r'^[a-zA-Z]+[0-9]$', word) is not None)
 
     def is_personals(self, word):
-        return utils.convert2unicode(word) in self._lexicon['personal']
+        return word in self._lexicon['personal']
 
     def is_color(self, word):
-        return utils.convert2unicode(word) in self._lexicon['color']
+        return word in self._lexicon['color']
 
     def is_place(self, word):
-        return utils.convert2unicode(word) in self._lexicon['place']
+        return word in self._lexicon['place']
 
     def is_position(self, word):
-        return utils.convert2unicode(word) in self._lexicon['position']
+        return word in self._lexicon['position']
 
     def is_date(self, word):
-        return utils.convert2unicode(word) in self._lexicon['date']
+        return word in self._lexicon['date']
 
     def get_words(self, word_type):
         return copy.deepcopy(self._lexicon[word_type])
@@ -98,16 +97,15 @@ class FixedSentimentLexicon(object):
         self._neutrals = neutrals
 
     def is_positive(self, word):
-        return utils.convert2unicode(word) in self._positives
+        return word in self._positives
 
     def is_negative(self, word):
-        return utils.convert2unicode(word) in self._negatives
+        return word in self._negatives
 
     def is_neutral(self, word):
-        return utils.convert2unicode(word) in self._neutrals
+        return word in self._neutrals
 
     def get_polar(self, word):
-        word = utils.convert2unicode(word)
         if word in self._positives:
             return '+'
         elif word in self._negatives:
@@ -130,26 +128,20 @@ class DegreeLexicon(object):
                 word = word.replace('[', '').replace(']', '')
                 __current_degree = word
 
-            degrees[__current_degree].add(utils.convert2unicode(word))
+            degrees[__current_degree].add(word)
 
         self._degrees = degrees
 
     def is_degree(self, word):
-        word = utils.convert2unicode(word)
-
         for head in self._degrees:
             if word in self._degrees[head]:
                 return True
-
         return False
 
     def get_head(self, word):
-        word = utils.convert2unicode(word)
-
         for head in self._degrees:
             if word in self._degrees[head]:
                 return head
-
         return None
 
 
@@ -179,7 +171,7 @@ class FormattedFeature(object):
         return None
 
     def get_heads(self):
-        return self._clusters.keys()
+        return list(self._clusters.keys())
 
     def is_feature(self, f):
         return f in self.__features

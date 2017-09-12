@@ -20,18 +20,18 @@ class MyTestCase(unittest.TestCase):
     def test_get_tokens(self):
         self.assertTrue(True)
 
-        hits = search([u'一般'], [])
-        print hits
+        hits = search(['一般'], [])
+        print(hits)
 
     def test_search(self):
         self.assertTrue(True)
 
-        print pmi.search_single()
-        print pmi.search_join(u'内存_大')
+        print(pmi.search_single())
+        print(pmi.search_join('内存_大'))
 
     def test_pmi(self):
         self.assertTrue(True)
-        print pmi.get_polar(u'内存_大')
+        print(pmi.get_polar('内存_大'))
 
 
 def search(tokens, words):

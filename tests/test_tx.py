@@ -26,17 +26,15 @@ class MyTestCase(unittest.TestCase):
 
         tokens = []
 
-        line = line.decode('utf-8')
-
         # 规则：三名词：NN(+DEG)+NN(+DEG)+NN
         # line = ' 都AD 是VC 回答VV 预售NN 的DEG 类NN 的DEG 商品NN 不AD 知道VV'
-        nps = re.findall(ur'(\S+)\001NN(?:\s\S+\001DEG)?\s(\S+)\001NN(?:\s\S+\001DEG)?\s(\S+)\001NN', line)
+        nps = re.findall(r'(\S+)\001NN(?:\s\S+\001DEG)?\s(\S+)\001NN(?:\s\S+\001DEG)?\s(\S+)\001NN', line)
         for np in nps:
             tokens.append('%s_%s_%s' % np)
 
         # 规则：两名词： NN(+DEG)+NN
         # line = u'快递NN 速度NN 也AD 很AD 快VA'
-        nps = re.findall(ur'(\S+)\001NN(?:\s\S+\001DEG)?\s(\S+)\001NN', line)
+        nps = re.findall(r'(\S+)\001NN(?:\s\S+\001DEG)?\s(\S+)\001NN', line)
         for np in nps:
             s_np = '%s_%s' % np
             if not is_token_exist(s_np, tokens):
@@ -44,7 +42,7 @@ class MyTestCase(unittest.TestCase):
 
         # 规则：一名词：NN
         # line = u'快递NN 也AD 很AD 快VA'
-        nps = re.findall(ur'(\S+)\001NN', line)
+        nps = re.findall(r'(\S+)\001NN', line)
         for np in nps:
             s_np = '%s' % np
             if not is_token_exist(s_np, tokens):
@@ -58,7 +56,7 @@ class MyTestCase(unittest.TestCase):
             print '%s_%s' % np
         '''
 
-        print '%s\n' % ','.join(tokens)
+        print('%s\n' % ','.join(tokens))
 
     def test_create2(self):
         self.assertTrue(True)

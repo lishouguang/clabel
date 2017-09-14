@@ -4,6 +4,11 @@
 ##### 1) 获取某个品类的评论文本
 
 ##### 2) 基于评论文本提取特征词/评价词
+
+特征词/评价词库的作用：
+- 分词
+- 归一化
+
 ```python
 pinglun_file = os.path.join(RESOURCE_DIR, 'mobile.sample')
 O_seeds = {u'不错', u'漂亮', u'流畅', u'方便', u'高', u'持久'}

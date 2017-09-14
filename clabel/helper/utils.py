@@ -27,8 +27,7 @@ def read_file(file_path):
 def write_file(file_path, lines):
     with codecs.open(file_path, 'w', encoding='utf-8') as f:
         for line in lines:
-            if line:
-                f.write('%s\n' % line)
+            f.write('%s\n' % line)
 
 
 def iter_file(file_path):

@@ -3,6 +3,8 @@
 import os
 import unittest
 
+from clabel.helper import utils
+
 from clabel.config import RESOURCE_DIR
 from clabel.labeler import LexiconExtractor
 from clabel.labeler import LabelExtractor
@@ -15,7 +17,7 @@ class MyTestCase(unittest.TestCase):
     def test_LexiconExtractor(self):
         self.assertTrue(True)
 
-        pinglun_file = os.path.join(RESOURCE_DIR, 'pinglun', 'mobile.sample.min')
+        pinglun_file = os.path.join(RESOURCE_DIR, 'mobile', 'mobile.sample.min')
         workspace = os.path.join(RESOURCE_DIR, 'tmp', 'test1')
         O_seeds = {'不错', '漂亮', '流畅', '方便', '高', '持久'}
 
@@ -25,13 +27,40 @@ class MyTestCase(unittest.TestCase):
     def test_labelExtractor(self):
         self.assertTrue(True)
 
-        txt = '手机不错，手机运行很流畅'
+        feature_file = os.path.join(RESOURCE_DIR, 'extractor', 'mobile.features.revised')
+        label_extractor = LabelExtractor(feature_file)
+
+        txt = '快递态度差。'
+        labels = label_extractor.extract_from_txt(txt)
+        print(' '.join([str(label) for label in labels]))
+
+    def test_labelExtractor_batch(self):
+        self.assertTrue(True)
 
         feature_file = os.path.join(RESOURCE_DIR, 'extractor', 'mobile.features.revised')
         label_extractor = LabelExtractor(feature_file)
+
+        '''
         labels = label_extractor.extract_from_txt(txt)
         for label in labels:
             print(label)
+        '''
+
+        results = []
+
+        comment_file = os.path.join(RESOURCE_DIR, 'tmp', 'test2', 'comment.mobile.txt')
+        for i, line in enumerate(utils.iter_file(comment_file)):
+            if i > 100:
+                break
+
+            labels = label_extractor.extract_from_txt(line)
+            # print(line, '->', labels)
+            results.append(line)
+            results.append('->')
+            results.append(' '.join([str(label) for label in labels]))
+            results.append('')
+
+        utils.write_file(os.path.join(RESOURCE_DIR, 'tmp', 'test2', 'labels.txt'), results)
 
 
 if __name__ == '__main__':

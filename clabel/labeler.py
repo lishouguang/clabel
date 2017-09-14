@@ -8,7 +8,7 @@ from fastavro import reader as avro_reader
 from clabel.helper import utils
 from clabel.config import RESOURCE_DIR
 
-from clabel.nlp import parser
+from clabel.nlp.parser import default_ltp_parser as parser
 from clabel.nlp.lexicon import degreeLexicon
 from clabel.nlp.lexicon import fixedSentimentLexicon
 from clabel.nlp.lexicon import FormattedFeature
@@ -267,8 +267,9 @@ class LabelExtractor(object):
         if polar == 'x' and nopinion is not None:
             polar = fixedSentimentLexicon.get_polar(nopinion)
 
-        if polar == 'x':
-            pmi.get_polar('%s_%s' % (feature, opinion))
+        # TODO 确定情感极性时需要在集群impala上进行查询，而外部机器访问不了集群
+        # if polar == 'x':
+        #     pmi.get_polar('%s_%s' % (feature, opinion))
 
         return polar
 
@@ -287,7 +288,8 @@ class LabelExtractor(object):
         for relation in sentence.relations:
 
             ftoken, otoken = foRule.match(relation.format, relation.token1, relation.token2)
-            if ftoken and otoken:
+            # TODO 加上判断逻辑：判断ftoken是否属于特征库
+            if ftoken and otoken and self._fFeature.is_feature(ftoken.word):
                 self.save_labels(labels, features, opinions, ftoken, otoken)
 
         # 无评价对象的提取方式，HED(Root/None, a/不错)
@@ -302,6 +304,12 @@ class LabelExtractor(object):
 
             if not is_exist:
                 self.save_labels(labels, features, opinions, parser.Token('', '', ''), rrelation.token2)
+
+            # 并列关系，比如“便宜实惠”
+            for xrelation in sentence.relations:
+                if xrelation.relation == 'COO' and xrelation.token1 == rrelation.token2:
+                    self.save_labels(labels, features, opinions, parser.Token('', '', ''), xrelation.token2)
+                    break
 
         return labels, features, opinions
 

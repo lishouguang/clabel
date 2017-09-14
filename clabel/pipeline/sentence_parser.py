@@ -10,7 +10,7 @@ from fastavro import writer
 from clabel.config import NLP_POS_SEPARATOR
 from clabel.config import NLP_SENT_SEPARATORS
 
-from clabel.nlp import parser
+from clabel.nlp.parser import default_ltp_parser as parser
 from clabel.helper.utils import iter_file
 
 from clabel.nlp.lexicon import irrelevantLexicon

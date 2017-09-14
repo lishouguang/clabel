@@ -7,7 +7,8 @@ from clabel.config import RESOURCE_DIR
 from clabel.helper.utils import iter_file
 from clabel.helper.utils import write_file
 
-from clabel.nlp import parser as parser
+# from clabel.nlp.parser import default_ltp_parser as parser
+from clabel.nlp.parser import default_hanlp_parser as parser
 
 
 class MyTestCase(unittest.TestCase):
@@ -43,7 +44,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(True)
 
         feature = '运行流畅'
-        posed = parser.pos_with_cache(feature.replace('_', ''))
+        posed = parser.pos(feature.replace('_', ''), cache=True)
         print(posed)
 
     def test_parse_sentence(self):

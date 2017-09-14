@@ -43,6 +43,8 @@ PMI_SEARCH_URL = 'http://123.56.26.142:13148/query/api/v1.0/%s'
 
 DB_FILE = os.path.join(RESOURCE_DIR, 'db', 'label.db')
 
-LTP_MODEL_DIR = os.path.join(RESOURCE_DIR, 'ltp_data')
+HANLP_MODEL_DIR = os.path.join(RESOURCE_DIR, 'external_model_data', 'hanlp')
+
+LTP_MODEL_DIR = os.path.join(RESOURCE_DIR, 'external_model_data', 'ltp')
 CUSTOM_TOKEN_FILE = os.path.join('lexicon', 'ltp', 'custom.token.txt')
 CUSTOM_POS_FILE = os.path.join('lexicon', 'ltp', 'custom.pos.txt')

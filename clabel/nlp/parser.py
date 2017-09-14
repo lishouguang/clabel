@@ -1,169 +1,325 @@
 # coding: utf-8
 
 import os
+import sys
 import re
 
 import queue
 import logging
 
-from pyltp import Parser
+from abc import ABC
+from abc import abstractclassmethod
+
+import jpype
+
 from pyltp import Segmentor
 from pyltp import Postagger
-from pyltp import SentenceSplitter
+from pyltp import Parser as LParser
+# from pyltp import SentenceSplitter
 from pyltp import NamedEntityRecognizer
 
-from clabel.helper import utils
 from clabel.config import RESOURCE_DIR
+
 from clabel.config import LTP_MODEL_DIR
 from clabel.config import CUSTOM_POS_FILE
 from clabel.config import CUSTOM_TOKEN_FILE
 
+from clabel.config import HANLP_MODEL_DIR
+
 logger = logging.getLogger(__file__)
 
 
-def ssplit(txt):
+class Parser(ABC):
+
+    def __init__(self):
+        self._pos_cache = dict()
+        self._queue = queue.Queue(500000)
+
+        super(Parser, self).__init__()
+
+    def ssplit(self, txt):
+        """
+        对文本分句/分词
+        :param txt: 一段文本
+        :return: [[word1, word2, ...], [word3, word4, ...], ...]
+        """
+        self
+        return [x for x in re.split(r'[\s,，.。:：!！?？、]', txt) if x]
+
+    @abstractclassmethod
+    def segment(self, txt):
+        """
+        分词
+        :param txt: 文本
+        :return: [word1, word2, ...]
+        """
+        pass
+
+    @abstractclassmethod
+    def pos(self, txt, cache=False):
+        """
+        对文本进行词性标注，附带了分句
+        :param txt:
+        :param cache:
+        :return: [Token1, Token2, ...]
+        """
+        pass
+
+    @abstractclassmethod
+    def ner(self, txt):
+        pass
+
+    @abstractclassmethod
+    def parse2relations(self, txt):
+        """
+        依存句法分析
+        :param txt:
+        :return: [Relation, Relation, ...]
+        :rtype: list of Relation
+        """
+        pass
+
+    @abstractclassmethod
+    def parse2sents(self, txt):
+        """
+        解析一个句子文本
+        :param txt:
+        :return: [Sentence, Sentence, ...]
+        :rtype: list of Sentence
+        """
+        pass
+
+    def _get_from_cache(self, txt):
+        return self._pos_cache.get(txt)
+
+    def _set_cache(self, txt, result):
+        self._pos_cache[txt] = result
+        self._queue.put(txt)
+
+        if self._queue.full():
+            key = self._queue.get()
+            self._pos_cache.pop(key)
+
+
+class LTPParser(Parser):
     """
-    对文本分句/分词
-    :param txt: 一段文本
-    :return: [[word1, word2, ...], [word3, word4, ...], ...]
+    基于LTP实现的Parser
+
+    LTP对用户自定义词典的支持不是很好，http://www.ltp-cloud.com/support/
+    1. 扩展自定义词典后，需要重新编译LTP
+    2. 分词支持自定义词典，但词性标注不支持
     """
 
-    return [x for x in re.split(r'[\s,，.。:：!！?？、]', txt) if x]
+    def __init__(self, ltp_model_dir, custom_seg_file=None, custom_pos_file=None):
+        """
+        :param ltp_model_dir:
+        """
+
+        super(LTPParser, self).__init__()
+
+        self._ltp_dir = ltp_model_dir
+
+        '''加载分词模型'''
+        seg_model_file = os.path.join(self._ltp_dir, 'cws.model')
+        self._segmentor = Segmentor()
+        if custom_seg_file:
+            self._segmentor.load_with_lexicon(seg_model_file, custom_seg_file)
+        else:
+            self._segmentor.load(seg_model_file)
+
+        '''加载词性标注模型'''
+        self._tagger = Postagger()
+        pos_model_file = os.path.join(self._ltp_dir, 'pos.model')
+        if custom_pos_file:
+            self._tagger.load_with_lexicon(pos_model_file, custom_pos_file)
+        else:
+            self._tagger.load(pos_model_file)
+
+        '''加载命名实体识别模型'''
+        self._ner = NamedEntityRecognizer()
+        self._ner.load(os.path.join(self._ltp_dir, 'ner.model'))
+
+        '''加载依存句法分析模型'''
+        self._parser = LParser()
+        self._parser.load(os.path.join(self._ltp_dir, 'parser.model'))
+
+    def segment(self, txt):
+        return list(self._segmentor.segment(txt))
+
+    def pos(self, txt, cache=False):
+
+        result = None
+
+        if cache:
+            result = self._get_from_cache(txt)
+
+        if result is None:
+            tokenized = self.segment(txt)
+            tags = self._tagger.postag(tokenized)
+
+            result = []
+            for i, w, t in zip(list(range(len(tokenized))), tokenized, tags):
+                result.append(Token(w, t, i))
+
+            self._set_cache(txt, result)
+
+        return result
+
+    def ner(self, txt):
+        tokens = self.pos(txt)
+        return list(self._ner.recognize([t.word for t in tokens], [t.pos for t in tokens]))
+
+    def parse2relations(self, txt):
+        tokens = self.pos(txt)
+
+        words = [t.word for t in tokens]
+        tags = [t.pos for t in tokens]
+
+        arcs = self._parser.parse(words, tags)
+
+        result = []
+        for i, w, p, a in zip(list(range(len(words))), words, tags, arcs):
+            head_token = Token(words[a.head - 1] if a.head > 0 else 'Root', tags[a.head - 1] if a.head > 0 else 'Root',
+                               a.head - 1)
+            dep_token = Token(w, p, i)
+
+            result.append(Relation(a.relation, head_token, dep_token))
+
+        return result
+
+    def parse2sents(self, txt):
+        sents = []
+
+        for sent_txt in self.ssplit(txt):
+            sent_relations = self.parse2relations(sent_txt + '。')
+            tokens = set()
+
+            for relation in sent_relations:
+                if relation.token1.word != 'ROOT':
+                    tokens.add(relation.token1)
+                tokens.add(relation.token2)
+
+            tokens = sorted(tokens, key=lambda t: t.id)
+
+            # sent = Sentence(''.join([w.word for w in tokens]))
+            sent = Sentence(sent_txt)
+
+            sent.tokens = tokens
+            sent.relations = sent_relations
+
+            sents.append(sent)
+
+        return sents
 
 
-_segmentor = Segmentor()
-_segmentor.load_with_lexicon(os.path.join(LTP_MODEL_DIR, 'cws.model'), CUSTOM_TOKEN_FILE)
-# _segmentor.load(os.path.join(MODEL_DIR, 'cws.model'))
-
-
-def segment(txt):
+class HanLPParser(Parser):
     """
-    分词
-    :param txt: 文本
-    :return: [word1, word2, ...]
+    基于HanLP实现的Parser
     """
-    return list(_segmentor.segment(txt))
+
+    def __init__(self, hanlp_dir):
+        """
+        :param hanlp_dir:
+        """
+        super(HanLPParser, self).__init__()
+
+        separator = ';' if sys.platform.startswith('win') else ':'
+        classpath_option = '-Djava.class.path={}{}{}'.format(hanlp_dir, separator, os.path.join(hanlp_dir, 'hanlp.jar'))
+        # -Dfile.encoding=UTF8
+        jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')
+
+        self._HanLP = jpype.JClass('com.hankcs.hanlp.HanLP')
+        self._NLPTokenizer = jpype.JClass('com.hankcs.hanlp.tokenizer.NLPTokenizer')
+
+    def segment(self, txt):
+        result = []
+
+        # words = self._HanLP.segment(txt)
+        words = self._NLPTokenizer.segment(txt)
+        for word in words:
+            result.append(word.word)
+
+        return result
+
+    def pos(self, txt, cache=False):
+        result = None
+
+        if cache:
+            result = self._get_from_cache(txt)
+
+        if result is None:
+            result = []
+
+            # words = self._HanLP.segment(txt)
+            words = self._NLPTokenizer.segment(txt)
+            for i, word in enumerate(words):
+                result.append(Token(word.word, word.nature.toString(), i))
+
+            self._set_cache(txt, result)
+
+        return result
+
+    def ner(self, txt):
+        pass
+
+    def parse2relations(self, txt):
+        result = []
+
+        relations = self._HanLP.parseDependency(txt)
+        iterator = relations.iterator()
+
+        while iterator.hasNext():
+            word2 = iterator.next()
+            word1 = word2.HEAD
+
+            token1 = Token(word1.LEMMA, word1.POSTAG, word1.ID)
+            token2 = Token(word2.LEMMA, word2.POSTAG, word2.ID)
+
+            result.append(Relation(word2.DEPREL, token1, token2))
+
+        return result
+
+    def parse2sents(self, txt):
+        sents = []
+
+        for sent_txt in self.ssplit(txt):
+            sent_relations = self.parse2relations(sent_txt + '。')
+            tokens = set()
+
+            for relation in sent_relations:
+                if relation.token1.word != '##核心##':
+                    tokens.add(relation.token1)
+                tokens.add(relation.token2)
+
+            tokens = sorted(tokens, key=lambda t: t.id)
+
+            # sent = Sentence(''.join([w.word for w in tokens]))
+            sent = Sentence(sent_txt)
+
+            sent.tokens = tokens
+            sent.relations = sent_relations
+
+            sents.append(sent)
+
+        return sents
 
 
-_tagger = Postagger()
-_tagger.load_with_lexicon(os.path.join(LTP_MODEL_DIR, 'pos.model'), CUSTOM_POS_FILE)
-# _tagger.load()
+class StandfordParser(Parser):
 
+    def segment(self, txt):
+        pass
 
-def pos(text):
-    """
-    对文本进行词性标注，附带了分句
-    :param text:
-    :return: [Token1, Token2, ...]
-    """
-    tokenized = segment(text)
-    tags = _tagger.postag(tokenized)
+    def pos(self, txt, cache=False):
+        pass
 
-    result = []
-    for i, w, t in zip(list(range(len(tokenized))), tokenized, tags):
-        result.append(Token(w, t, i))
+    def ner(self, txt):
+        pass
 
-    return result
+    def parse2relations(self, txt):
+        pass
 
-
-def pos_with_cache(text):
-    """
-    带缓存的标注
-    :param text:
-    :return:
-    """
-    result = _get_from_cache(text)
-
-    if result is None:
-        result = pos(text)
-        _set_cache(text, result)
-
-    return result
-
-
-_ner = NamedEntityRecognizer()
-_ner.load(os.path.join(LTP_MODEL_DIR, 'ner.model'))
-
-
-def ner(raw):
-    tokens = pos(raw)
-    return list(_ner.recognize([t.word for t in tokens], [t.pos for t in tokens]))
-
-
-_parser = Parser()
-_parser.load(os.path.join(LTP_MODEL_DIR, 'parser.model'))
-
-
-def parse2relations(text):
-    """
-    依存句法分析
-    :param text:
-    :return:
-    :rtype: list of Relation
-    """
-    tokens = pos(text)
-
-    words = [t.word for t in tokens]
-    tags = [t.pos for t in tokens]
-
-    arcs = _parser.parse(words, tags)
-
-    result = []
-    for i, w, p, a in zip(list(range(len(words))), words, tags, arcs):
-        head_token = Token(words[a.head - 1] if a.head > 0 else 'Root', tags[a.head - 1] if a.head > 0 else 'Root', a.head-1)
-        dep_token = Token(w, p, i)
-
-        result.append(Relation(a.relation, head_token, dep_token))
-
-    return result
-
-
-def parse2sents(txt):
-    """
-    解析一个句子文本
-    :param txt:
-    :return: Sentence对象
-    :rtype: list of Sentence
-    """
-    sents = []
-
-    for sent_txt in ssplit(txt):
-        sent_relations = parse2relations(sent_txt)
-        tokens = set()
-
-        for relation in sent_relations:
-            if relation.token1.word != 'ROOT':
-                tokens.add(relation.token1)
-            tokens.add(relation.token2)
-
-        tokens = sorted(tokens, key=lambda t: t.id)
-
-        # sent = Sentence(''.join([w.word for w in tokens]))
-        sent = Sentence(sent_txt)
-
-        sent.tokens = tokens
-        sent.relations = sent_relations
-
-        sents.append(sent)
-
-    return sents
-
-
-__pos_cache = dict()
-__queue = queue.Queue(500000)
-
-
-def _get_from_cache(text):
-    return __pos_cache.get(text)
-
-
-def _set_cache(text, result):
-    __pos_cache[text] = result
-    __queue.put(text)
-
-    if __queue.full():
-        key = __queue.get()
-        __pos_cache.pop(key)
+    def parse2sents(self, txt):
+        pass
 
 
 class Token(object):
@@ -269,3 +425,6 @@ class Sentence(object):
     def __str__(self):
         return ' '.join([str(relation) for relation in self.__relations])
 
+
+default_ltp_parser = LTPParser(LTP_MODEL_DIR, custom_seg_file=CUSTOM_TOKEN_FILE, custom_pos_file=CUSTOM_POS_FILE)
+default_hanlp_parser = HanLPParser(HANLP_MODEL_DIR)

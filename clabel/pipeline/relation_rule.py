@@ -140,8 +140,11 @@ class MORule(MFRule):
     pass
 
 
-foRule = FORule(os.path.join(RESOURCE_DIR, 'relation_rule', 'fo.rule'))
-ffRule = FFRule(os.path.join(RESOURCE_DIR, 'relation_rule', 'ff.rule'))
-ooRule = FFRule(os.path.join(RESOURCE_DIR, 'relation_rule', 'oo.rule'))
-mfRule = MFRule(os.path.join(RESOURCE_DIR, 'relation_rule', 'mf.rule'))
-moRule = MORule(os.path.join(RESOURCE_DIR, 'relation_rule', 'mo.rule'))
+parser_type = 'hanlp'
+# parser_type = 'ltp'
+
+foRule = FORule(os.path.join(RESOURCE_DIR, 'relation_rule', parser_type, 'fo.rule'))
+ffRule = FFRule(os.path.join(RESOURCE_DIR, 'relation_rule', parser_type, 'ff.rule'))
+ooRule = FFRule(os.path.join(RESOURCE_DIR, 'relation_rule', parser_type, 'oo.rule'))
+mfRule = MFRule(os.path.join(RESOURCE_DIR, 'relation_rule', parser_type, 'mf.rule'))
+moRule = MORule(os.path.join(RESOURCE_DIR, 'relation_rule', parser_type, 'mo.rule'))

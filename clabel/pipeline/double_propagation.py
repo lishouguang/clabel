@@ -7,7 +7,7 @@ from collections import Counter
 
 from clabel.nlp.lexicon import irrelevantLexicon
 
-from clabel.nlp import parser
+from clabel.nlp.parser import default_parser as parser
 
 logger = logging.getLogger(__file__)
 

@@ -23,6 +23,7 @@ from clabel.config import RESOURCE_DIR
 from clabel.config import LTP_MODEL_DIR
 from clabel.config import CUSTOM_POS_FILE
 from clabel.config import CUSTOM_TOKEN_FILE
+from clabel.config import DEFAULT_PARSER
 
 from clabel.config import HANLP_MODEL_DIR
 
@@ -231,6 +232,10 @@ class HanLPParser(Parser):
         self._HanLP = jpype.JClass('com.hankcs.hanlp.HanLP')
         self._NLPTokenizer = jpype.JClass('com.hankcs.hanlp.tokenizer.NLPTokenizer')
 
+        self._CustomDictionary = jpype.JClass('com.hankcs.hanlp.dictionary.CustomDictionary')
+
+        self._CustomDictionary.add('好用', 'a 9999')
+
     def segment(self, txt):
         result = []
 
@@ -405,7 +410,7 @@ class Sentence(object):
 
     def get_root_relation(self):
         for relation in self.__relations:
-            if relation.relation == 'HED':
+            if relation.relation in ['HED', '核心关系']:
                 return relation
 
         return None
@@ -426,5 +431,9 @@ class Sentence(object):
         return ' '.join([str(relation) for relation in self.__relations])
 
 
-default_ltp_parser = LTPParser(LTP_MODEL_DIR, custom_seg_file=CUSTOM_TOKEN_FILE, custom_pos_file=CUSTOM_POS_FILE)
-default_hanlp_parser = HanLPParser(HANLP_MODEL_DIR)
+if DEFAULT_PARSER == 'ltp':
+    default_parser = LTPParser(LTP_MODEL_DIR, custom_seg_file=CUSTOM_TOKEN_FILE, custom_pos_file=CUSTOM_POS_FILE)
+elif DEFAULT_PARSER == 'hanlp':
+    default_parser = HanLPParser(HANLP_MODEL_DIR)
+else:
+    default_parser = None

@@ -8,7 +8,7 @@ from clabel.helper.utils import iter_file
 from clabel.helper.utils import write_file
 
 # from clabel.nlp.parser import default_ltp_parser as parser
-from clabel.nlp.parser import default_hanlp_parser as parser
+from clabel.nlp.parser import default_parser as parser
 
 
 class MyTestCase(unittest.TestCase):

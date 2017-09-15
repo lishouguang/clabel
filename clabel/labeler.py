@@ -8,10 +8,12 @@ from fastavro import reader as avro_reader
 from clabel.helper import utils
 from clabel.config import RESOURCE_DIR
 
-from clabel.nlp.parser import default_ltp_parser as parser
+# from clabel.nlp.parser import default_ltp_parser as parser
+from clabel.nlp.parser import default_parser as parser
+from clabel.nlp.parser import Token
 from clabel.nlp.lexicon import degreeLexicon
 from clabel.nlp.lexicon import fixedSentimentLexicon
-from clabel.nlp.lexicon import FormattedFeature
+from clabel.nlp.lexicon import RevisedTerm
 
 from clabel.pipeline import clean
 from clabel.pipeline import sentence_parser
@@ -52,7 +54,8 @@ class LexiconExtractor(object):
 
         self._word2vec_file = os.path.join(self._workspace, 'word2vec', 'w2c.model')
 
-        self._feature_file = os.path.join(self._workspace, 'feature', 'features.raw')
+        self._feature_file = os.path.join(self._workspace, '_result', 'features.raw')
+        self._opinion_file = os.path.join(self._workspace, '_result', 'opinions.raw')
 
         if not os.path.exists(self._workspace):
             os.mkdir(self._workspace)
@@ -99,13 +102,17 @@ class LexiconExtractor(object):
         model = w2c.get(self._word2vec_file)
 
         cf = cluster.create(F, model, preference=-30)
-
         features = ['%s %s' % (cls, ' '.join(cf[cls])) for cls in cf]
         utils.write_file(self._feature_file, features)
 
+        O = utils.read_file(self._prune_o_file)
+        of = cluster.create(O, model, preference=None)
+        opinions = ['%s %s' % (cls, ' '.join(of[cls])) for cls in of]
+        utils.write_file(self._opinion_file, opinions)
+
         logger.info('pipeline over.')
 
-        return cf, O
+        return cf, of, F, O
 
     @staticmethod
     def _iter_sentences_relations(avro_file):
@@ -160,8 +167,9 @@ class LexiconExtractor(object):
 
 class LabelExtractor(object):
 
-    def __init__(self, feature_file, lexicon_dir=None):
-        self._fFeature = FormattedFeature(feature_file)
+    def __init__(self, feature_file, opinion_file, lexicon_dir=None):
+        self._fTerm = RevisedTerm(feature_file)
+        self._oTerm = RevisedTerm(opinion_file)
         pass
 
     def extract_from_file(self, txt_file):
@@ -227,7 +235,7 @@ class LabelExtractor(object):
         :param feature:
         :return:
         """
-        nfeature = self._fFeature.get_head(feature)
+        nfeature = self._fTerm.get_head(feature)
         if nfeature is None:
             nfeature = feature
 
@@ -289,7 +297,7 @@ class LabelExtractor(object):
 
             ftoken, otoken = foRule.match(relation.format, relation.token1, relation.token2)
             # TODO 加上判断逻辑：判断ftoken是否属于特征库
-            if ftoken and otoken and self._fFeature.is_feature(ftoken.word):
+            if ftoken and otoken and self._fTerm.is_term(ftoken.word):
                 self.save_labels(labels, features, opinions, ftoken, otoken)
 
         # 无评价对象的提取方式，HED(Root/None, a/不错)
@@ -303,12 +311,12 @@ class LabelExtractor(object):
                     break
 
             if not is_exist:
-                self.save_labels(labels, features, opinions, parser.Token('', '', ''), rrelation.token2)
+                self.save_labels(labels, features, opinions, Token('', '', ''), rrelation.token2)
 
             # 并列关系，比如“便宜实惠”
             for xrelation in sentence.relations:
                 if xrelation.relation == 'COO' and xrelation.token1 == rrelation.token2:
-                    self.save_labels(labels, features, opinions, parser.Token('', '', ''), xrelation.token2)
+                    self.save_labels(labels, features, opinions, Token('', '', ''), xrelation.token2)
                     break
 
         return labels, features, opinions

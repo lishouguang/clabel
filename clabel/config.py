@@ -48,3 +48,5 @@ HANLP_MODEL_DIR = os.path.join(RESOURCE_DIR, 'external_model_data', 'hanlp')
 LTP_MODEL_DIR = os.path.join(RESOURCE_DIR, 'external_model_data', 'ltp')
 CUSTOM_TOKEN_FILE = os.path.join('lexicon', 'ltp', 'custom.token.txt')
 CUSTOM_POS_FILE = os.path.join('lexicon', 'ltp', 'custom.pos.txt')
+
+DEFAULT_PARSER = 'hanlp'

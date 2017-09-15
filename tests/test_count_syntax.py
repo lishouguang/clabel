@@ -8,7 +8,7 @@ from collections import defaultdict
 
 from clabel.config import RESOURCE_DIR
 
-from clabel.nlp import parser
+from clabel.nlp.parser import default_hanlp_parser as parser
 from clabel.helper import utils
 
 
@@ -29,8 +29,6 @@ class MyTestCase(unittest.TestCase):
         print('sentiment words size: {}, feature words size: {}'.format(len(sentiments), len(features)))
 
         utils.write_file(os.path.join(RESOURCE_DIR, 'mobile', 'mobile.words'), sentiments | features)
-
-        # 修改代码，使LTP加载这些词
 
     def test_count_syntax(self):
         self.assertTrue(True)
@@ -56,7 +54,7 @@ class MyTestCase(unittest.TestCase):
             if i % 100 == 0:
                 print(i)
 
-            if i > 100000:
+            if i > 200000:
                 break
 
             for sent in parser.parse2sents(line):
@@ -126,10 +124,12 @@ class MyTestCase(unittest.TestCase):
     def test_x1(self):
         self.assertTrue(True)
 
-        txt = '计步器 44 应用 70 []'
-        groups = re.findall(r'^(\S+) \S+ \S+ \S+ \[([^\[\]]*)\].*$', txt)
-        for g in groups:
-            print(g)
+        lines = []
+        for i, line in enumerate(utils.iter_file(os.path.join(RESOURCE_DIR, 'mobile', 'std.txt'))):
+            if i < 50000:
+                lines.append(line)
+
+        utils.write_file(os.path.join(RESOURCE_DIR, 'mobile', 'std.5w.txt'), lines)
 
 
 def load_sentiment_words(file_path):

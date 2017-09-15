@@ -1,3 +1,0 @@
-SBV(给力/i, CPU/ws)
-SBV(不怎么样/i, CPU/ws)
-SBV(不怎么样/i, wifi/ws)

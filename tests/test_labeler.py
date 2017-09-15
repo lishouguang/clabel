@@ -17,7 +17,7 @@ class MyTestCase(unittest.TestCase):
     def test_LexiconExtractor(self):
         self.assertTrue(True)
 
-        pinglun_file = os.path.join(RESOURCE_DIR, 'mobile', 'mobile.sample.min')
+        pinglun_file = os.path.join(RESOURCE_DIR, 'mobile', 'std.5w.txt')
         workspace = os.path.join(RESOURCE_DIR, 'tmp', 'test1')
         O_seeds = {'不错', '漂亮', '流畅', '方便', '高', '持久'}
 
@@ -27,18 +27,22 @@ class MyTestCase(unittest.TestCase):
     def test_labelExtractor(self):
         self.assertTrue(True)
 
-        feature_file = os.path.join(RESOURCE_DIR, 'extractor', 'mobile.features.revised')
-        label_extractor = LabelExtractor(feature_file)
+        feature_file = os.path.join(RESOURCE_DIR, 'tmp', 'test1', '_result', 'features.revise')
+        opinion_file = os.path.join(RESOURCE_DIR, 'tmp', 'test1', '_result', 'opinions.revise')
 
-        txt = '快递态度差。'
+        label_extractor = LabelExtractor(feature_file, opinion_file)
+
+        txt = '4x很好用，正好过年抢红包使用，速度很快'
         labels = label_extractor.extract_from_txt(txt)
         print(' '.join([str(label) for label in labels]))
 
     def test_labelExtractor_batch(self):
         self.assertTrue(True)
 
-        feature_file = os.path.join(RESOURCE_DIR, 'extractor', 'mobile.features.revised')
-        label_extractor = LabelExtractor(feature_file)
+        feature_file = os.path.join(RESOURCE_DIR, 'tmp', 'test1', '_result', 'features.revise')
+        opinion_file = os.path.join(RESOURCE_DIR, 'tmp', 'test1', '_result', 'opinions.revise')
+
+        label_extractor = LabelExtractor(feature_file, opinion_file)
 
         '''
         labels = label_extractor.extract_from_txt(txt)

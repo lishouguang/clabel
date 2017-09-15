@@ -1,3 +1,0 @@
-SBV(美观/a, 黑边/nd)
-SBV(窄/a, 黑边/nd)
-SBV(宽/a, 黑边/nd)

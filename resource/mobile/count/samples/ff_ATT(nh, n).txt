@@ -1,4 +1,0 @@
-ATT(颜值/nh, 宝贝/n)
-ATT(解锁/nh, 指纹/n)
-ATT(高通/nh, 处理器/n)
-ATT(骁龙/nh, 价位/n)

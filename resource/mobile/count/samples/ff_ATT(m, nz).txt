@@ -1,5 +1,0 @@
-ATT(652/m, 高通/nz)
-ATT(810/m, 骁龙/nz)
-ATT(820/m, 骁龙/nz)
-ATT(652/m, 骁龙/nz)
-ATT(801/m, 高通/nz)

@@ -1,6 +1,0 @@
-SBV(上网/v, wifi/ws)
-SBV(运行/v, app/ws)
-SBV(连接/v, wifi/ws)
-SBV(链接/v, wiff/ws)
-SBV(反应/v, Cpu/ws)
-SBV(连接/v, USB/ws)

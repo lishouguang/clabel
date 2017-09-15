@@ -1,8 +1,0 @@
-SBV(差/v, CPU/ws)
-SBV(闪退/v, app/ws)
-SBV(中断/v, wifi/ws)
-SBV(满意/v, cpu/ws)
-SBV(够用/v, CPU/ws)
-SBV(可以/v, CPU/ws)
-SBV(断流/v, wifi/ws)
-SBV(掉线/v, wifi/ws)

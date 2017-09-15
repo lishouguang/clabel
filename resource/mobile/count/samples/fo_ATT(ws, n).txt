@@ -1,8 +1,0 @@
-ATT(ok/ws, 待机/n)
-ATT(bug/ws, 系统/n)
-ATT(ok/ws, 机器/n)
-ATT(ok/ws, 分辨率/n)
-ATT(ok/ws, 性能/n)
-ATT(good/ws, 性价比/n)
-ATT(bug/ws, 机器/n)
-ATT(ok/ws, 速度/n)

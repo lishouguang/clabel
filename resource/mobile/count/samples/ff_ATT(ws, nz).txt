@@ -1,3 +1,0 @@
-ATT(cpu/ws, 骁龙/nz)
-ATT(CPU/ws, 高通/nz)
-ATT(CPU/ws, 骁龙/nz)

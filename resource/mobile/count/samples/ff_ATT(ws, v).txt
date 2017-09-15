@@ -1,3 +1,0 @@
-ATT(wifi/ws, 链接/v)
-ATT(app/ws, 运行/v)
-ATT(gps/ws, 定位/v)

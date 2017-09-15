@@ -1,5 +1,0 @@
-ATT(卡顿/nh, 运行/v)
-ATT(美美/nh, 自拍/v)
-ATT(卡顿/nh, 应用/v)
-ATT(美美/nh, 拍照/v)
-ATT(卡顿/nh, 耗电/v)

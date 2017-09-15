@@ -1,2 +1,0 @@
-COO(设计/v, CPU/ws)
-COO(充电/v, usb/ws)

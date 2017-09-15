@@ -1,3 +1,0 @@
-VOB(配置/v, ok/ws)
-VOB(喜欢/v, ROM/ws)
-VOB(看上去/v, low/ws)

@@ -1,4 +1,0 @@
-COO(屏幕/n, CPU/ws)
-COO(信号/n, gps/ws)
-COO(内存/n, cpu/ws)
-COO(信号/n, wifi/ws)

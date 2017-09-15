@@ -145,7 +145,7 @@ class DegreeLexicon(object):
         return None
 
 
-class FormattedFeature(object):
+class RevisedTerm(object):
 
     def __init__(self, f):
         lines = utils.read_file(f)
@@ -156,25 +156,25 @@ class FormattedFeature(object):
             if line.startswith('='):
                 continue
 
-            features = [f for f in line.split(' ') if f.strip() != '']
-            self._clusters[features[0]] = set(features)
+            terms = [f for f in line.split(' ') if f.strip() != '']
+            self._clusters[terms[0]] = set(terms)
 
-        self.__features = set()
+        self._terms = set()
         for head in self._clusters:
             for feature in self._clusters[head]:
-                self.__features.add(feature)
+                self._terms.add(feature)
 
-    def get_head(self, feature):
+    def get_head(self, term):
         for head in self._clusters:
-            if feature in self._clusters[head]:
+            if term in self._clusters[head]:
                 return head
         return None
 
     def get_heads(self):
         return list(self._clusters.keys())
 
-    def is_feature(self, f):
-        return f in self.__features
+    def is_term(self, t):
+        return t in self._terms
 
 
 from clabel.config import LEXICON_DEGREE_WORDS_FILE

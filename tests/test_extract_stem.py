@@ -177,7 +177,7 @@ def extract_stems(features, sentence):
     '''
     rule3_has = False
     for relation in sentence.relations:
-        is_feature = features.is_feature(relation.token2.word)
+        is_feature = features.is_term(relation.token2.word)
         is_relation = relation.relation in ['ATT', 'ADV', 'SBV']
         is_pos = relation.token1.pos in ['a', 'b', 'd', 'v', 'i']
 
@@ -198,7 +198,7 @@ def extract_stems(features, sentence):
     '''
     if not rule3_has:
         for relation in sentence.relations:
-            if features.is_feature(relation.token2.word):
+            if features.is_term(relation.token2.word):
                 index = sentence.tokens.index(relation.token1)
 
                 for relation_ in sentence.relations[index - 1:]:

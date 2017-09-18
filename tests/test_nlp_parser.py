@@ -7,7 +7,6 @@ from clabel.config import RESOURCE_DIR
 from clabel.helper.utils import iter_file
 from clabel.helper.utils import write_file
 
-# from clabel.nlp.parser import default_ltp_parser as parser
 from clabel.nlp.parser import default_parser as parser
 
 
@@ -23,7 +22,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_token(self):
         self.assertTrue(True)
-        for t in parser.segment('触摸屏效果还不错'):
+        for t in parser.segment('很给力'):
             print(t)
 
     def test_pos(self):

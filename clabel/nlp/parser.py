@@ -18,8 +18,6 @@ from pyltp import Parser as LParser
 # from pyltp import SentenceSplitter
 from pyltp import NamedEntityRecognizer
 
-from clabel.config import RESOURCE_DIR
-
 from clabel.config import LTP_MODEL_DIR
 from clabel.config import CUSTOM_POS_FILE
 from clabel.config import CUSTOM_TOKEN_FILE
@@ -216,6 +214,7 @@ class LTPParser(Parser):
 class HanLPParser(Parser):
     """
     基于HanLP实现的Parser
+    在hanlp.properties里配置用户自定义词典。新添加词后，需要删除词库data\dictionary\custom\CustomDictionary.txt.bin缓存文件。
     """
 
     def __init__(self, hanlp_dir):

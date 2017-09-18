@@ -1,33 +1,28 @@
 # coding: utf-8
 
-import os
 import logging
+import os
 
 from fastavro import reader as avro_reader
 
-from clabel.helper import utils
 from clabel.config import RESOURCE_DIR
-
-# from clabel.nlp.parser import default_ltp_parser as parser
-from clabel.nlp.parser import default_parser as parser
-from clabel.nlp.parser import Token
+from clabel.helper import utils
+from clabel.model import word2vec as w2c
+from clabel.nlp.lexicon import RevisedTerm
 from clabel.nlp.lexicon import degreeLexicon
 from clabel.nlp.lexicon import fixedSentimentLexicon
-from clabel.nlp.lexicon import RevisedTerm
-
-from clabel.pipeline import clean
-from clabel.pipeline import sentence_parser
+from clabel.nlp.parser import Token
+# from clabel.nlp.parser import default_ltp_parser as parser
+from clabel.nlp.parser import default_parser as parser
+from clabel.pipeline import cluster
 from clabel.pipeline import double_propagation
 from clabel.pipeline import prune
-from clabel.pipeline import cluster
-from clabel.pipeline import pmi
-from clabel.model import word2vec as w2c
+from clabel.pipeline import sentence_parser
+from clabel.preprocessing import clean
 
 logger = logging.getLogger(__file__)
 
 from clabel.pipeline.relation_rule import foRule
-from clabel.pipeline.relation_rule import ffRule
-from clabel.pipeline.relation_rule import ooRule
 from clabel.pipeline.relation_rule import mfRule
 from clabel.pipeline.relation_rule import moRule
 
@@ -53,6 +48,7 @@ class LexiconExtractor(object):
         self._prune_o_file = os.path.join(self._workspace, 'prune', 'dp.O.pruned')
 
         self._word2vec_file = os.path.join(self._workspace, 'word2vec', 'w2c.model')
+        # self._word2vec_file = os.path.join(RESOURCE_DIR, 'model', 'internal_model', 'word2vec', 'w2c.model')
 
         self._feature_file = os.path.join(self._workspace, '_result', 'features.raw')
         self._opinion_file = os.path.join(self._workspace, '_result', 'opinions.raw')

@@ -4,9 +4,7 @@ import os
 import unittest
 
 from clabel.config import RESOURCE_DIR
-
-from clabel.pipeline import clean
-from clabel.nlp import parser_local as parser
+from clabel.preprocessing import clean
 
 
 class MyTestCase(unittest.TestCase):

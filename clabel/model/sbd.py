@@ -113,7 +113,6 @@ class SBDModel(object):
         X[0] = ctable.encode(tokens, MAX_SENTENCE_LENGTH)
 
         y_pred = self._model.predict(X, verbose=1)
-        logger.info(y_pred)
 
         labels = []
         for xx in y_pred[0]:

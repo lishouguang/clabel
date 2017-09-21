@@ -2,6 +2,7 @@
 
 import os
 import sys
+import jpype
 import logging.config
 
 # reload(sys)
@@ -50,3 +51,16 @@ CUSTOM_TOKEN_FILE = os.path.join('lexicon', 'ltp', 'custom.token.txt')
 CUSTOM_POS_FILE = os.path.join('lexicon', 'ltp', 'custom.pos.txt')
 
 DEFAULT_PARSER = 'hanlp'
+
+LM_MODEL_DIR = os.path.join(RESOURCE_DIR, 'model', 'internal_model', 'lm')
+
+
+jars_hanlp = [HANLP_MODEL_DIR, os.path.join(HANLP_MODEL_DIR, 'hanlp.jar')]
+jars_lm = [os.path.join(LM_MODEL_DIR, 'lm.jar'), os.path.join(LM_MODEL_DIR, 'berkeleylm.jar')]
+jars = jars_hanlp + jars_lm
+
+separator = ';' if sys.platform.startswith('win') else ':'
+classpath = separator.join(jars)
+classpath_option = '-Djava.class.path=' + classpath
+# -Dfile.encoding=UTF8
+jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')

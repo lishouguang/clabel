@@ -223,11 +223,6 @@ class HanLPParser(Parser):
         """
         super(HanLPParser, self).__init__()
 
-        separator = ';' if sys.platform.startswith('win') else ':'
-        classpath_option = '-Djava.class.path={}{}{}'.format(hanlp_dir, separator, os.path.join(hanlp_dir, 'hanlp.jar'))
-        # -Dfile.encoding=UTF8
-        jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')
-
         self._HanLP = jpype.JClass('com.hankcs.hanlp.HanLP')
         self._NLPTokenizer = jpype.JClass('com.hankcs.hanlp.tokenizer.NLPTokenizer')
 

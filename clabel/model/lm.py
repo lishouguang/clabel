@@ -51,17 +51,19 @@ class LM(object):
         return self._lm.getProb(' '.join(words))
 
 
-def build_lm_train_data(raw_data_file, train_data_file):
+def build_lm_train_data(raw_data_file, hanzi_data_file, pnyin_data_file):
     """
     构建Language Model训练语料
     :param raw_data_file:
-    :param train_data_file:
+    :param hanzi_data_file:
+    :param pnyin_data_file:
     """
     SYMBOL_ENG = '<eng>'
     SYMBOL_NUM = '<num>'
     SYMBOL_ENG_NUM = '<engnum>'
 
-    with codecs.open(train_data_file, mode='w', encoding='utf-8') as f:
+    with codecs.open(hanzi_data_file, mode='w', encoding='utf-8') as hf,\
+            codecs.open(pnyin_data_file, mode='w', encoding='utf-8') as pf:
 
         for i, line in enumerate(iter_file(raw_data_file)):
             if i % 10000 == 0:
@@ -91,11 +93,11 @@ def build_lm_train_data(raw_data_file, train_data_file):
                     pnyin = pnyin if pnyin else word
                     pnyins.append(pnyin)
 
-                # if words:
-                #     f.write('{}\n'.format(' '.join(words)))
+                if words:
+                    hf.write('{}\n'.format(' '.join(words)))
 
                 if pnyins:
-                    f.write('{}\n'.format(' '.join(words)))
+                    pf.write('{}\n'.format(' '.join(words)))
 
 
 def run_test():
@@ -120,4 +122,6 @@ def run_test():
 
 if __name__ == '__main__':
     # run_test()
-    build_lm_train_data(os.path.join(RESOURCE_DIR, 'mobile', 'std.txt'), os.path.join(RESOURCE_DIR, 'tmp', 'std.pinyin.txt'))
+    build_lm_train_data(os.path.join(RESOURCE_DIR, 'mobile', 'std.txt'),
+                        os.path.join(RESOURCE_DIR, 'tmp', 'std.hanzi.txt'),
+                        os.path.join(RESOURCE_DIR, 'tmp', 'std.pinyin.txt'))

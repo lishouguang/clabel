@@ -1,5 +1,7 @@
 # coding: utf-8
 
+
+import re
 from pypinyin import lazy_pinyin
 from pypinyin.utils import simple_seg
 from pypinyin.constants import RE_HANS
@@ -13,6 +15,8 @@ def tag_pinyin(txt):
             pys = lazy_pinyin(part)
             newparts += [_ for _ in zip(part, pys)]
         else:
-            newparts.append((part, None))
+            for p in re.split(r'([，。？！?,])', part):
+                if p:
+                    newparts.append((p, None))
 
     return newparts

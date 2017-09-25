@@ -362,12 +362,22 @@ class PinyinModel(BaseModel):
 
 class HomoModel(object):
 
+    model_file = os.path.join(RESOURCE_DIR, 'model', 'internal_model', 'wed', 'homo', 'homo.pkl')
+
     def __init__(self, vocab_file):
         self._pinyin2chars = defaultdict(set)
         self._counter = Counter()
         self._char2pinyin = dict()
 
+        i = 0
         for line in iter_file(vocab_file):
+            i += 1
+            if i % 10000 == 0:
+                print(i)
+
+            if i > 1000000:
+                break
+
             for c, p in tag_pinyin(line):
                 self._pinyin2chars[p].add(c)
                 self._char2pinyin[c] = p
@@ -385,3 +395,14 @@ class HomoModel(object):
     @property
     def dictx(self):
         return self._pinyin2chars
+
+    def save(self):
+        save_obj(self, HomoModel.model_file)
+
+    @staticmethod
+    def load():
+        """
+        :return: HomoModel
+        :rtype HomoModel
+        """
+        return read_obj(HomoModel.model_file)

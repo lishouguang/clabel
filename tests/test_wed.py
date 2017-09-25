@@ -33,10 +33,11 @@ class MyTestCase(unittest.TestCase):
     def test_homonym(self):
         self.assertTrue(True)
 
-        m = HomoModel(os.path.join(RESOURCE_DIR, 'mobile', 'std.min.txt'))
-        print(m.pinyin2chars('hen'))
+        m = HomoModel(os.path.join(RESOURCE_DIR, 'mobile', 'std.txt'))
         print(m.dictx)
-        
+        print(m.pinyin2chars('hen'))
+        m.save()
+
     def test_correct(self):
         self.assertTrue(True)
 

@@ -5,6 +5,8 @@ import re
 import jpype
 import codecs
 
+import networkx as nx
+
 from abc import ABC
 from abc import abstractmethod
 
@@ -12,10 +14,11 @@ from clabel.config import RESOURCE_DIR
 from clabel.config import LM_MODEL_DIR
 from clabel.nlp.pinyin import tag_pinyin
 
+from clabel.model.wed import HomoModel
 from clabel.helper.utils import iter_file
 
 
-class LM(ABC):
+class BaseLM(ABC):
     """
     Language Model
     基于BerkeleyLM实现
@@ -66,18 +69,52 @@ class LM(ABC):
         pass
 
 
-class HanziLM(LM):
+class HanziLM(BaseLM):
 
     def predict_prob(self, txt):
-        hanzis, _ = LM.preprocess(txt)
+        hanzis, _ = BaseLM.preprocess(txt)
         return self._lm.getProb(' '.join(hanzis))
 
 
-class PinyinLM(LM):
+class PinyinLM(BaseLM):
 
     def predict_prob(self, txt):
-        _, pnyins = LM.preprocess(txt)
+        _, pnyins = BaseLM.preprocess(txt)
         return self._lm.getProb(' '.join(pnyins))
+
+
+class LM(object):
+
+    def __init__(self, hanzi_model_file, pinyin_model_file):
+        self._hanzi_lm = HanziLM(hanzi_model_file)
+        self._pinyin_lm = PinyinLM(pinyin_model_file)
+
+        self._homoModel = HomoModel.load()
+
+    def rate(self, txt):
+        hanzi_prob = self._hanzi_lm.predict_prob(txt)
+        pinyin_prob = self._pinyin_lm.predict_prob(txt)
+
+        return hanzi_prob, pinyin_prob, pinyin_prob - hanzi_prob
+
+    def pinyin2hanzi(self, pinyins):
+        """
+        讲一串拼音转换成一串汉字
+        图的最短路径算法
+        :type pinyins: list
+        """
+        homos = [self._homoModel.pinyin2chars(pnyin) for pnyin in pinyins]
+        homos = [['<s>']] + homos + [['</s>']]
+
+        g = nx.Graph()
+        for i in range(1, len(homos)):
+            for pw in homos[i-1]:
+                for w in homos[i]:
+                    tp = (pw + w).replace('<s>', '').replace('</s>', '')
+                    prob = self._hanzi_lm.predict_prob(tp)
+                    g.add_edge(pw, w, weight=1-prob)
+
+        return nx.shortest_path(g, '<s>', '</s>', weight='weight')
 
 
 def build_lm_train_data(raw_data_file, hanzi_data_file, pnyin_data_file):
@@ -138,7 +175,7 @@ def build_lm_train_data(raw_data_file, hanzi_data_file, pnyin_data_file):
 
 
 def run_test():
-    lm = LM(os.path.join(LM_MODEL_DIR, 'hanzi.arpa'))
+    lm = BaseLM(os.path.join(LM_MODEL_DIR, 'hanzi.arpa'))
 
     from clabel.helper.utils import iter_file
     from clabel.helper.utils import write_file

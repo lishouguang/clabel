@@ -24,7 +24,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(True)
 
         txt = 'Iphonex不知道会不会火, Iphone8肯定是不行了。'
-        hanzis, pnyins = lm.LM.preprocess(txt)
+        hanzis, pnyins = lm.BaseLM.preprocess(txt)
         print(hanzis)
         print(pnyins)
 
@@ -34,7 +34,7 @@ class MyTestCase(unittest.TestCase):
         hanzi_model_file = os.path.join(LM_MODEL_DIR, 'hanzi.arpa')
 
         hanziLM = lm.HanziLM(hanzi_model_file)
-        prob = hanziLM.predict_prob('手机性价比很高。')
+        prob = hanziLM.predict_prob('很好')
         print(prob)
 
     def test_pinyin_lm(self):
@@ -45,6 +45,36 @@ class MyTestCase(unittest.TestCase):
         pinyinLM = lm.PinyinLM(pnyin_model_file)
         prob = pinyinLM.predict_prob('手机性价比很高。')
         print(prob)
+
+    def test_lm(self):
+        self.assertTrue(True)
+
+        hanzi_model_file = os.path.join(LM_MODEL_DIR, 'hanzi.arpa')
+        pnyin_model_file = os.path.join(LM_MODEL_DIR, 'pinyin.arpa')
+
+        model = lm.LM(hanzi_model_file, pnyin_model_file)
+
+        txts = ['手机性价比很高。', '吃好喝好啊', '像素很高', '相素很高', '分辨率低', '看不清楚', '反应很快', '反映很快']
+
+        for txt in txts:
+            rate = model.rate(txt)
+            print(txt, rate)
+
+    def test_lm_pinyin2hanzi(self):
+        self.assertTrue(True)
+
+        hanzi_model_file = os.path.join(LM_MODEL_DIR, 'hanzi.arpa')
+        pnyin_model_file = os.path.join(LM_MODEL_DIR, 'pinyin.arpa')
+
+        model = lm.LM(hanzi_model_file, pnyin_model_file)
+
+        while True:
+            try:
+                line = input("请输入一串拼音：")
+                hanzis = model.pinyin2hanzi(line.strip().split())
+                print(hanzis)
+            except Exception:
+                pass
 
 
 if __name__ == '__main__':

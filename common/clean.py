@@ -2,10 +2,10 @@
 
 import re
 import codecs
-import logging
 import html.parser
+import logging
 
-from clabel.helper.utils import iter_file
+from common.utils import iter_file
 
 logger = logging.getLogger(__file__)
 

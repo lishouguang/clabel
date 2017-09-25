@@ -9,9 +9,12 @@ from abc import abstractmethod
 import jpype
 import networkx as nx
 
-from nlp.pinyin import tag_pinyin, HomoModel
 from lm.config import RESOURCE_DIR
-from clabel.config import LM_MODEL_DIR
+from lm.config import LM_MODEL_DIR
+
+from nlp.pinyin import tag_pinyin
+from nlp.pinyin import HomoModel
+
 from common.utils import iter_file
 
 

@@ -4,7 +4,8 @@ import os
 import re
 import unittest
 
-from clabel.config import RESOURCE_DIR
+from sbd.config import RESOURCE_DIR
+from sbd.config import APP_RESOURCE_DIR
 from common.utils import iter_file
 from common.utils import write_file
 from sbd.sbd import SBDModel
@@ -25,7 +26,7 @@ class MyTestCase(unittest.TestCase):
     def test_sbd(self):
         self.assertTrue(True)
 
-        model = SBDModel.load(keras_model_file=os.path.join(RESOURCE_DIR, 'model', 'internal_model', 'sbd', 'sbd.keras.model'))
+        model = SBDModel.load(keras_model_file=os.path.join(APP_RESOURCE_DIR, 'sbd.keras.model'))
 
         lines = []
         for line in iter_file(os.path.join(RESOURCE_DIR, 'tmp', 'comment.mobile.txt')):
@@ -34,6 +35,7 @@ class MyTestCase(unittest.TestCase):
             # sequence = model.predict_sequence(sent)
             pline = model.predict_txt(sent)
             lines.append('{} -> {}'.format(line, pline))
+            print('{} -> {}'.format(line, pline))
 
         write_file(os.path.join(RESOURCE_DIR, 'tmp', 'sbd.result.txt'), lines)
 

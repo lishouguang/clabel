@@ -2,7 +2,7 @@
 
 import unittest
 
-from nlp import default_parser as parser
+from nlp.parser import default_parser as parser
 
 
 class MyTestCase(unittest.TestCase):

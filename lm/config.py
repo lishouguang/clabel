@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import os
+import sys
 import jpype
 from logging import config as logconfig
 
@@ -21,5 +22,7 @@ jars_lm = [os.path.join(LM_MODEL_DIR, 'lm.jar'), os.path.join(LM_MODEL_DIR, 'ber
 separator = ';' if sys.platform.startswith('win') else ':'
 classpath = separator.join(jars_lm)
 classpath_option = '-Djava.class.path=' + classpath
-# -Dfile.encoding=UTF8
-jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')
+
+if not jpype.isJVMStarted():
+    # -Dfile.encoding=UTF8
+    jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')

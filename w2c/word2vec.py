@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import os
 import re
 import logging
 import itertools
@@ -8,6 +9,8 @@ import multiprocessing
 from gensim.models.word2vec import Word2Vec
 
 from common import utils
+
+from w2c.config import DEFAULT_MODEL_FILE
 from w2c.config import WORD_POS_SEPARATOR
 
 logger = logging.getLogger(__file__)
@@ -49,7 +52,7 @@ def train(sentences, model_file):
     return model
 
 
-def get(model_file):
+def get(model_file=DEFAULT_MODEL_FILE):
     """
     :rtype: Word2Vec
     """

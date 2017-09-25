@@ -11,6 +11,9 @@ TMP_DIR = os.path.join(RESOURCE_DIR, 'tmp')
 
 APP_RESOURCE_DIR = os.path.join(RESOURCE_DIR, os.path.basename(APP_DIR))
 
-logconfig.fileConfig(os.path.join(ROOT_DIR, 'logging.ini'))
+DEFAULT_MODEL_FILE = os.path.join(APP_RESOURCE_DIR, 'w2c.model')
 
 WORD_POS_SEPARATOR = '\001'
+
+logconfig.fileConfig(os.path.join(ROOT_DIR, 'logging.ini'))
+

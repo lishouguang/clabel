@@ -3,8 +3,8 @@
 import os
 import unittest
 
-from clabel.config import LM_MODEL_DIR
-from clabel.config import RESOURCE_DIR
+from lm.config import LM_MODEL_DIR
+from lm.config import RESOURCE_DIR
 from lm import lm
 
 

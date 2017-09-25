@@ -39,10 +39,15 @@ CUSTOM_POS_FILE = os.path.join(APP_RESOURCE_DIR, 'lexicon', 'ltp', 'custom.pos.t
 '''HanLP Model'''
 HANLP_MODEL_DIR = os.path.join(APP_RESOURCE_DIR, 'model', 'hanlp')
 
-jars_hanlp = [HANLP_MODEL_DIR, os.path.join(HANLP_MODEL_DIR, 'hanlp.jar')]
+jars_hanlp = [HANLP_MODEL_DIR, os.path.join(HANLP_MODEL_DIR, 'hanlp-1.3.4.jar')]
 
 separator = ';' if sys.platform.startswith('win') else ':'
 classpath = separator.join(jars_hanlp)
 classpath_option = '-Djava.class.path=' + classpath
+
+print('.............')
+print(classpath_option)
 # -Dfile.encoding=UTF8
-jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')
+print(jpype.isJVMStarted())
+if not jpype.isJVMStarted():
+    jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')

@@ -4,12 +4,11 @@ import os
 import re
 from collections import Counter
 
-from clabel.helper import utils
 from clabel.config import RESOURCE_DIR
-
-from clabel.nlp.lexicon import degreeLexicon
-from clabel.nlp.lexicon import irrelevantLexicon
-from clabel.nlp.parser import default_parser as parser
+from common import utils
+from nlp.lexicon import degreeLexicon
+from nlp.lexicon import irrelevantLexicon
+from nlp.parser import default_parser as parser
 
 
 def find_adj(corpus_file, dest_file, max_lines=200000, freq_threshold=10):

@@ -1,13 +1,11 @@
 # coding: utf-8
 
-import logging
 import itertools
-
+import logging
 from collections import Counter
 
-from clabel.nlp.lexicon import irrelevantLexicon
-
-from clabel.nlp.parser import default_parser as parser
+from nlp.parser import default_parser as parser
+from nlp.lexicon import irrelevantLexicon
 
 logger = logging.getLogger(__file__)
 

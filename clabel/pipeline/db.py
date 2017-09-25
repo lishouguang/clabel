@@ -3,7 +3,6 @@
 import logging
 import sqlite3
 
-from clabel.helper import utils
 from clabel.config import DB_FILE
 
 CREATE_POLAR_SQL = '''

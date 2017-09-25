@@ -4,8 +4,7 @@ import os
 import re
 
 from clabel.config import RESOURCE_DIR
-from clabel.helper.utils import iter_file
-
+from common.utils import iter_file
 
 ''''
 解析关系规则

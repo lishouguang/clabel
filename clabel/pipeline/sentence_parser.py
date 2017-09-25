@@ -1,19 +1,15 @@
 # coding: utf-8
 
+import logging
 import os
 import re
-import time
-import logging
 
 from fastavro import writer
 
 from clabel.config import NLP_POS_SEPARATOR
-from clabel.config import NLP_SENT_SEPARATORS
-
-from clabel.nlp.parser import default_parser as parser
-from clabel.helper.utils import iter_file
-
-from clabel.nlp.lexicon import irrelevantLexicon
+from common.utils import iter_file
+from nlp.lexicon import irrelevantLexicon
+from nlp.parser import default_parser as parser
 
 logger = logging.getLogger(__file__)
 

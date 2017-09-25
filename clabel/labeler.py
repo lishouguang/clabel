@@ -1,30 +1,30 @@
 # coding: utf-8
 
-import logging
 import os
-
+import logging
 from fastavro import reader as avro_reader
 
+from common import utils, clean
+
 from clabel.config import RESOURCE_DIR
-from clabel.helper import utils
-from clabel.model import word2vec as w2c
-from clabel.nlp.lexicon import RevisedTerm
-from clabel.nlp.lexicon import degreeLexicon
-from clabel.nlp.lexicon import fixedSentimentLexicon
-from clabel.nlp.parser import Token
-# from clabel.nlp.parser import default_ltp_parser as parser
-from clabel.nlp.parser import default_parser as parser
 from clabel.pipeline import cluster
 from clabel.pipeline import double_propagation
 from clabel.pipeline import prune
 from clabel.pipeline import sentence_parser
-from clabel.preprocessing import clean
+from clabel.revised.term import RevisedTerm
 
-logger = logging.getLogger(__file__)
+from nlp.lexicon import degreeLexicon
+from nlp.lexicon import fixedSentimentLexicon
+from nlp.parser import Token
+from nlp.parser import default_parser as parser
+
+from w2c import word2vec as w2c
 
 from clabel.pipeline.relation_rule import foRule
 from clabel.pipeline.relation_rule import mfRule
 from clabel.pipeline.relation_rule import moRule
+
+logger = logging.getLogger(__file__)
 
 
 class LexiconExtractor(object):

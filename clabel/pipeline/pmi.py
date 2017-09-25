@@ -1,12 +1,11 @@
 # coding: utf-8
 
-import math
 import logging
+import math
+
 import requests
 
-from clabel.helper import utils
 from clabel.config import PMI_SEARCH_URL
-
 from . import db
 
 logger = logging.getLogger(__file__)

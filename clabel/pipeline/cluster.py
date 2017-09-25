@@ -1,16 +1,16 @@
 # coding: utf-8
 
-import os
 import logging
-import numpy as np
+import os
 from collections import defaultdict
 
-from sklearn.cluster import KMeans
+import numpy as np
 from sklearn.cluster import AffinityPropagation
+from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity
 
 from clabel.config import RESOURCE_DIR
-from clabel.model import word2vec as w2c
+from w2c import word2vec as w2c
 
 logger = logging.getLogger(__file__)
 

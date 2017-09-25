@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import os
+import re
 import logging
 from fastavro import reader as avro_reader
 
@@ -13,6 +14,8 @@ from clabel.pipeline import prune
 from clabel.pipeline import sentence_parser
 from clabel.revised.term import RevisedTerm
 
+from clabel.preprocessing import std
+
 from nlp.lexicon import degreeLexicon
 from nlp.lexicon import fixedSentimentLexicon
 from nlp.parser import Token
@@ -23,6 +26,8 @@ from w2c import word2vec as w2c
 from clabel.pipeline.relation_rule import foRule
 from clabel.pipeline.relation_rule import mfRule
 from clabel.pipeline.relation_rule import moRule
+
+from clabel.config import SENTENCE_PROB_THRESHOLD
 
 logger = logging.getLogger(__file__)
 
@@ -192,7 +197,12 @@ class LabelExtractor(object):
 
         labels = []
         for txt in txts:
-            for sent in parser.parse2sents(txt):
+
+            # 执行预处理
+            sentences = LabelExtractor.preprocess(txt)
+
+            for sentence in sentences:
+                sent = parser.parse2sents(sentence)[0]
                 slabels, features, opinions = self._extract_labels_stem(sent)
 
                 for label in slabels:
@@ -224,6 +234,44 @@ class LabelExtractor(object):
                 label.polar = self.get_polar(label.feature_np, label.opinion, label.nfeature, label.nopinion)
 
         return labels
+
+    @staticmethod
+    def preprocess(txt):
+        """
+        预处理，断句、纠错、无意义过滤
+        :param txt:
+        """
+        # 添加标点，进行断句
+        if not re.findall(r'[，。？！?,]', txt):
+            txt = std.sbd(txt)
+
+        sents = []
+        for sent in parser.ssplit(txt):
+
+            # 提取中文、英文、数字
+            sent = std.extract_txt(sent)
+
+            if not sent:
+                continue
+
+            '''纠错'''
+            ctxt = std.wed(txt)
+            if txt != ctxt:
+                txt_prob = std.prob(txt)
+                ctxt_prob = std.prob(ctxt)
+
+                # 新文本的概率大于旧文本，即纠错
+                if ctxt_prob > txt_prob:
+                    txt = ctxt
+                    logger.info('correct from [{}] to [{}]'.format(txt, ctxt))
+
+            prob = std.prob(txt)
+            if prob < SENTENCE_PROB_THRESHOLD:
+                continue
+
+            sents.append(sent)
+
+        return sents
 
     def normalize_feature(self, feature):
         """

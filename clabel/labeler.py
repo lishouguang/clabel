@@ -28,6 +28,7 @@ from clabel.pipeline.relation_rule import mfRule
 from clabel.pipeline.relation_rule import moRule
 
 from clabel.config import SENTENCE_PROB_THRESHOLD
+from clabel.config import TO_NORMALIZE
 
 logger = logging.getLogger(__file__)
 
@@ -217,21 +218,22 @@ class LabelExtractor(object):
 
                 labels += slabels
 
-            # 标准化标签的特征
-            for label in labels:
-                label.nfeature = self.normalize_feature(label.feature_np)
+            if TO_NORMALIZE:
+                # 标准化标签的特征
+                for label in labels:
+                    label.nfeature = self.normalize_feature(label.feature_np)
 
-            # 标准化标签的评价词
-            for label in labels:
-                label.nopinion = self.normalize_opinion(label.opinion)
+                # 标准化标签的评价词
+                for label in labels:
+                    label.nopinion = self.normalize_opinion(label.opinion)
 
-            # 标准化标签的程度词修饰符
-            for label in labels:
-                label.omodifier2 = self.normalize_opinion_degree(label.omodifier)
+                # 标准化标签的程度词修饰符
+                for label in labels:
+                    label.omodifier2 = self.normalize_opinion_degree(label.omodifier)
 
-            # 判断情感极性
-            for label in labels:
-                label.polar = self.get_polar(label.feature_np, label.opinion, label.nfeature, label.nopinion)
+                # 判断情感极性
+                for label in labels:
+                    label.polar = self.get_polar(label.feature_np, label.opinion, label.nfeature, label.nopinion)
 
         return labels
 
@@ -254,18 +256,19 @@ class LabelExtractor(object):
             if not sent:
                 continue
 
-            '''纠错'''
-            ctxt = std.wed(txt)
-            if txt != ctxt:
-                txt_prob = std.prob(txt)
-                ctxt_prob = std.prob(ctxt)
+            if not re.findall(r'[a-zA-Z0-9]', sent):
+                '''纠错，只对中文纠错'''
+                csent = std.wed(sent)
+                if sent != csent:
+                    sent_prob = std.prob(sent)
+                    csent_prob = std.prob(csent)
 
-                # 新文本的概率大于旧文本，即纠错
-                if ctxt_prob > txt_prob:
-                    txt = ctxt
-                    logger.info('correct from [{}] to [{}]'.format(txt, ctxt))
+                    # 新文本的概率大于旧文本，即纠错
+                    if csent_prob > sent_prob:
+                        sent = csent
+                        logger.info('correct from [{}] to [{}]'.format(sent, csent))
 
-            prob = std.prob(txt)
+            prob = std.prob(sent)
             if prob < SENTENCE_PROB_THRESHOLD:
                 continue
 
@@ -346,7 +349,7 @@ class LabelExtractor(object):
 
         # 无评价对象的提取方式，HED(Root/None, a/不错)
         rrelation = sentence.get_root_relation()
-        if rrelation.token2.pos == 'a':
+        if rrelation.token2.pos in ['a', 'ad']:
 
             is_exist = False
             for label in labels:

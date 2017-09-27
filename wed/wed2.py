@@ -13,14 +13,18 @@ def correct(txt):
     corrects = []
 
     for sent in re.split(r'([，。？！?,])', txt):
-        print(sent)
         if re.match(r'[，。？！?,]', sent):
             corrects.append(sent)
 
         else:
             tps = tag_pinyin(sent)
             pinyins = ''.join([tp[1] for tp in tps])
-            corrects.append(p2h(pinyins))
+            try:
+                cc = p2h(pinyins)
+                corrects.append(cc)
+            except Exception as e:
+                print('error:', sent)
+                corrects.append(sent)
 
     return ''.join(corrects)
 

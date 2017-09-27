@@ -14,23 +14,16 @@ class MyTestCase(unittest.TestCase):
     def test_p2h(self):
         self.assertTrue(True)
 
-        stime1 = time.time()
-        pnyins = 'xingjiabihengao'
-        hanzis = p2h(pnyins)
-        etime1 = time.time()
-        print(hanzis, (etime1 - stime1))
+        while True:
 
-        stime2 = time.time()
-        pnyins = 'pingmutaidale'
-        hanzis = p2h(pnyins)
-        etime2 = time.time()
-        print(hanzis, (etime2 - stime2))
+            pnyins = input('请输入拼音: ')
 
-        stime3 = time.time()
-        pnyins = 'youdianfahuang'
-        hanzis = p2h(pnyins)
-        etime3 = time.time()
-        print(hanzis, (etime3 - stime3))
+            stime1 = time.time()
+
+            hanzis = p2h(pnyins)
+
+            etime1 = time.time()
+            print(hanzis, '耗时:', (etime1 - stime1))
 
 
 if __name__ == '__main__':

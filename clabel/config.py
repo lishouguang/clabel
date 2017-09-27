@@ -34,6 +34,8 @@ DB_FILE = os.path.join(RESOURCE_DIR, 'db', 'label.db')
 
 SENTENCE_PROB_THRESHOLD = -2
 
+TO_NORMALIZE = False
+
 
 '''设置jvm classpath'''
 separator = ';' if sys.platform.startswith('win') else ':'
@@ -53,4 +55,4 @@ classpath_option = '-Djava.class.path=' + classpath
 
 # -Dfile.encoding=UTF8
 if not jpype.isJVMStarted():
-    jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')
+    jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx2048m')

@@ -30,9 +30,11 @@ class MyTestCase(unittest.TestCase):
     def test_parse(self):
         self.assertTrue(True)
 
-        relations = parser.parse2relations('触摸屏效果还不错')
-        for relation in relations:
-            print(relation)
+        while True:
+            line = input('请输入文本：')
+            relations = parser.parse2relations(line)
+            for relation in relations:
+                print(relation)
 
     def test_parse_cache(self):
         self.assertTrue(True)

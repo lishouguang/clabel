@@ -25,4 +25,4 @@ classpath_option = '-Djava.class.path=' + classpath
 
 if not jpype.isJVMStarted():
     # -Dfile.encoding=UTF8
-    jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')
+    jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx2048m')

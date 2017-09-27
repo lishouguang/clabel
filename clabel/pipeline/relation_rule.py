@@ -139,8 +139,8 @@ class MORule(MFRule):
     pass
 
 
-parser_type = 'hanlp'
-# parser_type = 'ltp'
+# parser_type = 'hanlp'
+parser_type = 'ltp'
 
 foRule = FORule(os.path.join(RESOURCE_DIR, 'relation_rule', parser_type, 'fo.rule'))
 ffRule = FFRule(os.path.join(RESOURCE_DIR, 'relation_rule', parser_type, 'ff.rule'))

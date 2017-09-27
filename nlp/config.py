@@ -27,7 +27,7 @@ LEXICON_DEGREE_WORDS_FILE = os.path.join(APP_RESOURCE_DIR, 'lexicon', 'degree', 
 
 
 '''syntax parser'''
-DEFAULT_PARSER = 'hanlp'
+DEFAULT_PARSER = 'ltp'
 
 
 '''LTP Model'''
@@ -50,4 +50,4 @@ print(classpath_option)
 # -Dfile.encoding=UTF8
 print(jpype.isJVMStarted())
 if not jpype.isJVMStarted():
-    jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx1024m')
+    jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx2048m')

@@ -24,7 +24,7 @@ logger = logging.getLogger(__file__)
 
 
 def load_vocab():
-    with open(P.vocab_data_file, 'rb') as f:
+    with open(P.vocab_data_file, 'r') as f:
 
         if P.vocab_data_file.endswith('.pkl'):
             return pickle.load(f)

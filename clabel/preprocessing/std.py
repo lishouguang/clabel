@@ -22,16 +22,31 @@ sbdModel = SBDModel.load(keras_model_file=os.path.join(SBD_DIR, 'sbd.keras.model
 
 
 def extract_txt(txt):
+    """
+    提取文本，英文、数字、中文
+    :param txt:
+    :return:
+    """
     words = re.findall(r'[a-zA-Z0-9\u4e00-\u9fa5]', txt)
     return ''.join(words)
 
 
 def sbd(txt):
+    """
+    断句
+    :param txt:
+    :return:
+    """
     sbd_txt = sbdModel.predict_txt(txt)
     return sbd_txt
 
 
 def prob(txt):
+    """
+    计算文本概率
+    :param txt:
+    :return:
+    """
     return hanziLM.predict_prob(txt)
 
 

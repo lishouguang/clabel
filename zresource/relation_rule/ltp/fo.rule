@@ -8,4 +8,5 @@ CMP(v_f, a_o) #运行流畅
 ADV(a_o, n_f)
 ADV(v_f, a_o) # 好用
 COO(v_f, a_o)
-SBV(z_o, n_f)
+# SBV(z_o, n_f)
+ATT(n_f, b_0) #好产品

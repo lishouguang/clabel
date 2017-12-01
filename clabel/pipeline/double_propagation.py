@@ -7,7 +7,7 @@ from collections import Counter
 from nlp.parser import default_parser as parser
 from nlp.lexicon import irrelevantLexicon
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 from clabel.pipeline.relation_rule import foRule
 from clabel.pipeline.relation_rule import ffRule
@@ -52,7 +52,7 @@ def extract(O_seed, R):
         logger.info('累计发现了%d个特征词，%d个评价词.' % (f_count, o_count))
 
         if f_count == last_f_count and o_count == last_o_count:
-            logging.info('未发现新的特征词/评价词，停止迭代.')
+            logger.info('未发现新的特征词/评价词，停止迭代.')
             break
 
         last_f_count = f_count
@@ -152,7 +152,7 @@ def extract_opinions_by_feature(relations, F):
         feature, opinion = foRule.match(fmt, token1, token2)
 
         if feature in F:
-            print('extract_opinions_by_feature: ', opinion)
+            logger.debug('extract_opinions_by_feature: ' + opinion)
             opinions.add(opinion)
 
     return opinions
@@ -205,26 +205,30 @@ def get_count(F, O, R):
 
 
 def is_feature_phrase(np):
-    f1, f2 = np.split('_')
+    try:
+        f1, f2 = np.split('_')
 
-    # 1）是有意义的词 2）字数大于2
-    if is_meaningful_word(f1) and is_meaningful_word(f2) and (len(f1) + len(f2)) > 2:
+        # 1）是有意义的词 2）字数大于2
+        if is_meaningful_word(f1) and is_meaningful_word(f2) and (len(f1) + len(f2)) > 2:
 
-        # 词性判断，短语中不能包含形容词
-        for f in [f1, f2]:
-            print(f)
-            token = parser.pos_with_cache(f + '。')[0]
-            if len(token.word) > 2:
-                logging.debug('prune: [%s]-[%s]不是一个词' % (np, f))
-                return False
+            # 词性判断，短语中不能包含形容词
+            for f in [f1, f2]:
+                token = parser.pos(f + '。', cache=True)[0]
+                # token = parser.pos_with_cache(f + '。')[0]
+                if len(token.word) > 2:
+                    logging.debug('prune: [%s]-[%s]不是一个词' % (np, f))
+                    return False
 
-            pos = token.pos
-            if pos not in {'v', 'n', 'a'}:
-                logging.debug('prune: [%s]-[%s/%s]特词性不对' % (np, f, pos))
-                return False
+                pos = token.pos
+                if pos not in {'v', 'n', 'a'}:
+                    logging.debug('prune: [%s]-[%s/%s]特词性不对' % (np, f, pos))
+                    return False
 
-        return True
-    else:
+            return True
+        else:
+            return False
+    except Exception:
+        logger.exception(np)
         return False
 
 

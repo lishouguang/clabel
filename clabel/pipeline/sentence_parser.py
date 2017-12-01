@@ -11,7 +11,7 @@ from common.utils import iter_file
 from nlp.lexicon import irrelevantLexicon
 from nlp.parser import default_parser as parser
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 __brands = irrelevantLexicon.get_words('brand')
 __models = irrelevantLexicon.get_words('model')
@@ -50,7 +50,9 @@ def parse(pinglun_file, dest_avro_file):
 
     def pingluns():
 
-        for pinglun in iter_file(pinglun_file):
+        for i, pinglun in enumerate(iter_file(pinglun_file)):
+            if i % 10000 == 0:
+                logger.info('parse line %d' % i)
 
             if pinglun:
 
@@ -88,7 +90,7 @@ def correct_pos(source_file, dest_file):
     :param source_file:
     :param dest_file:
     """
-    logging.info('to correct pos...')
+    logger.info('to correct pos...')
 
     correct_map = {'BR': __brands, 'MO': __models, 'PE': __personals}
 

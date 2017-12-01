@@ -5,7 +5,8 @@ import re
 import logging
 from fastavro import reader as avro_reader
 
-from common import utils, clean
+from common import utils
+from common import clean
 
 from clabel.config import RESOURCE_DIR
 from clabel.pipeline import cluster
@@ -16,19 +17,18 @@ from clabel.revised.term import RevisedTerm
 
 from clabel.preprocessing import std
 
+from nlp.parser import Token
 from nlp.lexicon import degreeLexicon
 from nlp.lexicon import fixedSentimentLexicon
-from nlp.parser import Token
 from nlp.parser import default_parser as parser
+
+from nlp.config import add_user_words
 
 from w2c import word2vec as w2c
 
 from clabel.pipeline.relation_rule import foRule
 from clabel.pipeline.relation_rule import mfRule
 from clabel.pipeline.relation_rule import moRule
-
-from clabel.config import SENTENCE_PROB_THRESHOLD
-from clabel.config import TO_NORMALIZE
 
 logger = logging.getLogger(__file__)
 
@@ -62,7 +62,7 @@ class LexiconExtractor(object):
         if not os.path.exists(self._workspace):
             os.mkdir(self._workspace)
 
-        for f in [self._clean_file, self._relation_file,
+        for f in [self._clean_file, self._relation_file, self._word2vec_file,
                   self._dp_f_file, self._dp_o_file, self._dp_f_counter, self._dp_o_counter,
                   self._prune_f_file, self._prune_o_file,
                   self._feature_file]:
@@ -80,12 +80,16 @@ class LexiconExtractor(object):
         """
         logger.info('pipeline run...')
 
-        clean.clean_file(pinglun_file, self._clean_file)
+        if not os.path.exists(self._clean_file):
+            logger.info('清洗文本')
+            clean.clean_file(pinglun_file, self._clean_file)
 
-        sentence_parser.parse(self._clean_file, self._relation_file)
+        if not os.path.exists(self._relation_file):
+            logger.info('句法解析')
+            sentence_parser.parse(self._clean_file, self._relation_file)
 
+        logger.info('提取特征词/评价词, double propagation算法')
         S = self._iter_sentences_relations(self._relation_file)
-
         F, O, fcounter, ocounter, rcount = double_propagation.extract(O_seeds, S)
 
         utils.write_file(self._dp_f_file, F)
@@ -93,20 +97,25 @@ class LexiconExtractor(object):
         utils.save_obj(fcounter, self._dp_f_counter)
         utils.save_obj(ocounter, self._dp_o_counter)
 
+        logger.info('特征词/评价词剪枝')
         F, O = prune.prune(F, O, fcounter, ocounter, rcount, self._threshold)
 
         utils.write_file(self._prune_f_file, F)
         utils.write_file(self._prune_o_file, O)
 
-        # T = self._iter_sentences_tokens(self._relation_file)
-        # model = w2c.train(T)
+        if not os.path.exists(self._word2vec_file):
+            logger.info('训练word2vec模型')
+            T = self._iter_sentences_tokens(self._relation_file)
+            w2c.train(T, self._word2vec_file)
 
         model = w2c.get(self._word2vec_file)
 
+        logger.info('聚类特征词')
         cf = cluster.create(F, model, preference=-30)
         features = ['%s %s' % (cls, ' '.join(cf[cls])) for cls in cf]
         utils.write_file(self._feature_file, features)
 
+        logger.info('聚类评价词')
         O = utils.read_file(self._prune_o_file)
         of = cluster.create(O, model, preference=None)
         opinions = ['%s %s' % (cls, ' '.join(of[cls])) for cls in of]
@@ -129,9 +138,14 @@ class LexiconExtractor(object):
                 # txt = pinglun['txt']
                 for sent in pinglun['sents']:
                     i += 1
-                    # if i < 1000:
+
+                    if i % 10000 == 0:
+                        logger.info('read sentence relations: %d' % i)
+
                     yield sent['relations']
 
+                if i > 1000000:
+                    break
         '''
         R = []
         source_dir = os.path.join(RESOURCE_DIR, 'parsed')
@@ -169,9 +183,16 @@ class LexiconExtractor(object):
 
 class LabelExtractor(object):
 
-    def __init__(self, feature_file, opinion_file, lexicon_dir=None):
+    def __init__(self, feature_file, opinion_file, lexicon_dir=None, normalize=False, sentence_prob_threshold=-2):
         self._fTerm = RevisedTerm(feature_file)
         self._oTerm = RevisedTerm(opinion_file)
+        self._normalize = normalize
+        self._sentence_prob_threshold = sentence_prob_threshold
+
+        # 添加到用户自定义字典里
+        add_user_words([(w, None, 'n') for w in self._fTerm.terms])
+        add_user_words([(w, None, 'a') for w in self._oTerm.terms])
+
         pass
 
     def extract_from_file(self, txt_file):
@@ -200,10 +221,11 @@ class LabelExtractor(object):
         for txt in txts:
 
             # 执行预处理
-            sentences = LabelExtractor.preprocess(txt)
+            sentences = self.preprocess(txt)
 
             for sentence in sentences:
                 sent = parser.parse2sents(sentence)[0]
+
                 slabels, features, opinions = self._extract_labels_stem(sent)
 
                 for label in slabels:
@@ -218,7 +240,7 @@ class LabelExtractor(object):
 
                 labels += slabels
 
-            if TO_NORMALIZE:
+            if self._normalize:
                 # 标准化标签的特征
                 for label in labels:
                     label.nfeature = self.normalize_feature(label.feature_np)
@@ -231,14 +253,13 @@ class LabelExtractor(object):
                 for label in labels:
                     label.omodifier2 = self.normalize_opinion_degree(label.omodifier)
 
-                # 判断情感极性
-                for label in labels:
-                    label.polar = self.get_polar(label.feature_np, label.opinion, label.nfeature, label.nopinion)
+            # 判断情感极性
+            for label in labels:
+                label.polar = self.get_polar(label.feature_np, label.opinion, label.nfeature, label.nopinion)
 
         return labels
 
-    @staticmethod
-    def preprocess(txt):
+    def preprocess(self, txt):
         """
         预处理，断句、纠错、无意义过滤
         :param txt:
@@ -256,8 +277,8 @@ class LabelExtractor(object):
             if not sent:
                 continue
 
+            '''纠错，只对中文纠错'''
             if not re.findall(r'[a-zA-Z0-9]', sent):
-                '''纠错，只对中文纠错'''
                 csent = std.wed(sent)
                 if sent != csent:
                     sent_prob = std.prob(sent)
@@ -268,8 +289,9 @@ class LabelExtractor(object):
                         sent = csent
                         logger.info('correct from [{}] to [{}]'.format(sent, csent))
 
+            '''过滤无意义文本'''
             prob = std.prob(sent)
-            if prob < SENTENCE_PROB_THRESHOLD:
+            if prob < self._sentence_prob_threshold:
                 continue
 
             sents.append(sent)
@@ -317,6 +339,7 @@ class LabelExtractor(object):
         :param nfeature:
         :param nopinion:
         """
+        self
         polar = fixedSentimentLexicon.get_polar(opinion)
 
         if polar == 'x' and nopinion is not None:

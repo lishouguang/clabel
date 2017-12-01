@@ -1,9 +1,12 @@
 # coding: utf-8
 
 import re
+import logging
 
 from nlp.pinyin import tag_pinyin
 from p2h.pinyin2hanzi import p2h
+
+logger = logging.getLogger(__name__)
 
 
 def correct(txt):
@@ -23,7 +26,7 @@ def correct(txt):
                 cc = p2h(pinyins)
                 corrects.append(cc)
             except Exception as e:
-                print('error:', sent)
+                logger.exception('correct error!')
                 corrects.append(sent)
 
     return ''.join(corrects)

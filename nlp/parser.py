@@ -11,17 +11,26 @@ from abc import abstractclassmethod
 
 import jpype
 
+import jieba
+from jieba import posseg
+
 from pyltp import Segmentor
 from pyltp import Postagger
 from pyltp import Parser as LParser
 from pyltp import NamedEntityRecognizer
 
+from common.utils import iter_file
+
+from nlp.config import add_user_words
 from nlp.config import LTP_MODEL_DIR
 from nlp.config import CUSTOM_POS_FILE
 from nlp.config import CUSTOM_TOKEN_FILE
 from nlp.config import DEFAULT_PARSER
 from nlp.config import HANLP_MODEL_DIR
+from nlp.config import RESOURCE_DIR
 
+from nlp.normalize import PosReviser
+from nlp.normalize import PosNormalizer
 
 logger = logging.getLogger(__file__)
 
@@ -94,8 +103,11 @@ class Parser(ABC):
         self._queue.put(txt)
 
         if self._queue.full():
-            key = self._queue.get()
-            self._pos_cache.pop(key)
+            try:
+                key = self._queue.get()
+                self._pos_cache.pop(key)
+            except Exception:
+                logger.exception('pos cache pop error')
 
 
 class LTPParser(Parser):
@@ -167,7 +179,7 @@ class LTPParser(Parser):
         return list(self._ner.recognize([t.word for t in tokens], [t.pos for t in tokens]))
 
     def parse2relations(self, txt):
-        tokens = self.pos(txt)
+        tokens = self.pos(txt, revise=True)
 
         words = [t.word for t in tokens]
         tags = [t.pos for t in tokens]
@@ -319,6 +331,24 @@ class StandfordParser(Parser):
         pass
 
 
+class CombinationParser(LTPParser):
+
+    def segment(self, txt):
+        return jieba.lcut(txt)
+
+    def pos(self, txt, cache=False, revise=False):
+        result = []
+
+        tags = [(w, PosNormalizer.normalize(p)) for w, p in posseg.cut(txt, HMM=False)]
+        for i, tp in enumerate(tags):
+            result.append(Token(tp[0], tp[1], i))
+
+        if revise and len(result) < 10:
+            result = PosReviser.revise(result)
+
+        return result
+
+
 class Token(object):
 
     def __init__(self, word, pos, index=-1):
@@ -423,8 +453,17 @@ class Sentence(object):
         return ' '.join([str(relation) for relation in self.__relations])
 
 
-if DEFAULT_PARSER == 'ltp':
-    default_parser = LTPParser(LTP_MODEL_DIR, custom_seg_file=CUSTOM_TOKEN_FILE, custom_pos_file=CUSTOM_POS_FILE)
+add_user_words([tuple(l.split()) for l in iter_file(os.path.join(RESOURCE_DIR, 'nlp', 'lexicon', 'jieba', 'user1.dict'))])
+add_user_words([tuple(l.split()) for l in iter_file(os.path.join(RESOURCE_DIR, 'nlp', 'lexicon', 'jieba', 'user2.dict'))])
+add_user_words([(w, None, max(ps.items(), key=lambda tp: tp[1])[0]) for w, ps in PosReviser.revise_map.items()])
+
+combParser = CombinationParser(LTP_MODEL_DIR, custom_seg_file=CUSTOM_TOKEN_FILE, custom_pos_file=CUSTOM_POS_FILE)
+ltpParser = LTPParser(LTP_MODEL_DIR, custom_seg_file=CUSTOM_TOKEN_FILE, custom_pos_file=CUSTOM_POS_FILE)
+
+if DEFAULT_PARSER == 'comb':
+    default_parser = combParser
+elif DEFAULT_PARSER == 'ltp':
+    default_parser = ltpParser
 elif DEFAULT_PARSER == 'hanlp':
     default_parser = HanLPParser(HANLP_MODEL_DIR)
 else:

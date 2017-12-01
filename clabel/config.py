@@ -32,11 +32,6 @@ PMI_SEARCH_URL = 'http://123.56.26.142:13148/query/api/v1.0/%s'
 DB_FILE = os.path.join(RESOURCE_DIR, 'db', 'label.db')
 
 
-SENTENCE_PROB_THRESHOLD = -2
-
-TO_NORMALIZE = False
-
-
 '''设置jvm classpath'''
 separator = ';' if sys.platform.startswith('win') else ':'
 

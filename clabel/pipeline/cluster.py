@@ -12,7 +12,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from clabel.config import RESOURCE_DIR
 from w2c import word2vec as w2c
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 def create(features, model, preference=-30):
@@ -90,10 +90,10 @@ def filter_features(features, model):
     for f in features:
         if f.find('_') != -1:
             word1, word2 = f.split('_')
-            if word1 in model.vocab and word2 in model.vocab:
+            if word1 in model and word2 in model:
                 filtered_features.append(f)
 
-        elif f in model.vocab:
+        elif f in model:
             filtered_features.append(f)
 
     return filtered_features

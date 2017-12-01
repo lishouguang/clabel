@@ -65,6 +65,10 @@ class IrrelevantLexicon(object):
     def get_words(self, word_type):
         return copy.deepcopy(self._lexicon[word_type])
 
+    @property
+    def items(self):
+        return set([w for words in self._lexicon.values() for w in words])
+
 
 class FixedSentimentLexicon(object):
     """
@@ -87,8 +91,12 @@ class FixedSentimentLexicon(object):
         }
 
         for row in list(sheet.rows)[1:]:
+            pos = row[1].value
             main_polar = row[6].value
             aux_polar = row[9].value
+
+            if pos != 'adj':
+                continue
 
             if main_polar not in __opinions:
                 continue
@@ -119,6 +127,10 @@ class FixedSentimentLexicon(object):
         else:
             return 'x'
 
+    @property
+    def items(self):
+        return self._positives | self._negatives | self._neutrals
+
 
 class DegreeLexicon(object):
     """程度词表"""
@@ -147,6 +159,14 @@ class DegreeLexicon(object):
             if word in self._degrees[head]:
                 return head
         return None
+
+    @property
+    def items(self):
+        ws = set()
+        for head, subs in self._degrees.items():
+            ws.add(head)
+            ws |= set(subs)
+        return ws
 
 
 degreeLexicon = DegreeLexicon(LEXICON_DEGREE_WORDS_FILE)

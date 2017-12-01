@@ -8,7 +8,7 @@ import requests
 from clabel.config import PMI_SEARCH_URL
 from . import db
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 def get_polar(word):

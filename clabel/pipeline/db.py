@@ -14,7 +14,7 @@ create table if not exists polar(
 )
 '''
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 with sqlite3.connect(DB_FILE) as _conn:
     _conn.isolation_level = None

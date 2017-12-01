@@ -33,7 +33,7 @@ def train(sentences, model_file):
     """
     workers = multiprocessing.cpu_count()
     window = 3
-    model = Word2Vec(workers=workers, window=window)
+    model = Word2Vec(workers=workers, window=window, iter=100)
 
     sentences1, sentences2 = itertools.tee(sentences)
 
@@ -43,7 +43,7 @@ def train(sentences, model_file):
 
     # 训练
     logger.info('train...')
-    model.train(sentences2)
+    model.train(sentences2, total_examples=model.corpus_count, epochs=model.iter)
 
     # 保存
     logger.info('save...')

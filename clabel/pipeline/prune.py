@@ -4,7 +4,7 @@ import logging
 
 from itertools import product
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 def prune(F, O, fcounter, ocounter, rcount, threshold):

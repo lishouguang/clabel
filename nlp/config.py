@@ -2,6 +2,7 @@
 
 import os
 import sys
+import jieba
 import jpype
 
 from logging import config as logconfig
@@ -27,7 +28,7 @@ LEXICON_DEGREE_WORDS_FILE = os.path.join(APP_RESOURCE_DIR, 'lexicon', 'degree', 
 
 
 '''syntax parser'''
-DEFAULT_PARSER = 'ltp'
+DEFAULT_PARSER = 'comb'
 
 
 '''LTP Model'''
@@ -45,9 +46,16 @@ separator = ';' if sys.platform.startswith('win') else ':'
 classpath = separator.join(jars_hanlp)
 classpath_option = '-Djava.class.path=' + classpath
 
-print('.............')
-print(classpath_option)
 # -Dfile.encoding=UTF8
 print(jpype.isJVMStarted())
 if not jpype.isJVMStarted():
     jpype.startJVM(jpype.getDefaultJVMPath(), classpath_option, '-Xrs', '-Xmx2048m')
+
+
+def add_user_words(words):
+    for word, freq, tag in words:
+        jieba.add_word(word, freq=freq, tag=tag)
+
+
+# 更改jieba默认字典
+# jieba.set_dictionary(os.path.join(RESOURCE_DIR, 'nlp', 'lexicon', 'jieba', 'dict.big.txt'))

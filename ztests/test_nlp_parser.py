@@ -46,9 +46,38 @@ class MyTestCase(unittest.TestCase):
     def test_parse_sentence(self):
         self.assertTrue(True)
 
-        sent_txt = '手机屏幕很大。'
+        import jieba
+        jieba.del_word('价格便宜')
+
+        sent_txt = '价格便宜。'
         for sent in parser.parse2sents(sent_txt):
             print('sent: ', sent)
+
+    def test_parse2(self):
+        self.assertTrue(True)
+
+        line = '之前买的另外一个手环质量就不行'
+        relations = parser.parse2relations(line)
+        for relation in relations:
+            print(relation)
+
+    def test_pos2(self):
+        self.assertTrue(True)
+
+        import jieba
+        from jieba import dt
+
+        from common.utils import write_file
+
+        # jieba.del_word('价格便宜')
+
+        # write_file('words.txt', dt.FREQ.keys())
+        txt = '价格便宜'
+        r = jieba.lcut(txt, HMM=False)
+        print(r)
+
+        print('dt.cache_file: ', dt.cache_file)
+        print('dt.tmp_dir: ', dt.tmp_dir)
 
 
 if __name__ == '__main__':

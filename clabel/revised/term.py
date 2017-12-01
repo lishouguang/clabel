@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import copy
 from common import utils
 
 
@@ -33,3 +34,7 @@ class RevisedTerm(object):
 
     def is_term(self, t):
         return t in self._terms
+
+    @property
+    def terms(self):
+        return copy.deepcopy(self._terms)

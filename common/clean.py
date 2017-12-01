@@ -24,7 +24,7 @@ def clean_file(source_file, dest_file):
 
 def clean_txt(txt):
 
-    txt = txt.strip()
+    txt = txt.strip().lower()
 
     # 还原html转义字符，&hellip; => ……
     txt = html_parser.unescape(txt)
@@ -45,7 +45,7 @@ def clean_txt(txt):
 
 def clean_txt2(txt):
 
-    txt = txt.strip()
+    txt = txt.strip().lower()
 
     # 还原html转义字符，&hellip; => ……
     txt = html_parser.unescape(txt)

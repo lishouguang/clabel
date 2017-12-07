@@ -4,14 +4,15 @@ import itertools
 import logging
 from collections import Counter
 
-from nlp.parser import default_parser as parser
 from nlp.lexicon import irrelevantLexicon
 
-logger = logging.getLogger(__name__)
+from nlp.parser import default_parser as parser
 
 from clabel.pipeline.relation_rule import foRule
 from clabel.pipeline.relation_rule import ffRule
 from clabel.pipeline.relation_rule import ooRule
+
+logger = logging.getLogger(__name__)
 
 
 def extract(O_seed, R):
@@ -21,7 +22,7 @@ def extract(O_seed, R):
     :param R: 评论集（已经被处理过）
     :return:
     """
-    logger.info('extract features/opinions by Double Propagation algorithm..')
+    logger.info('extract features/opinions by Double Propagation algorithm...')
 
     F = set()
     O = set(O_seed)
@@ -80,6 +81,7 @@ def extract_feature_by_opinion(relations, O):
         feature, opinion = foRule.match(fmt, token1, token2)
 
         if opinion in O:
+            logger.debug('extract feature [%s] by fo relation [%s]', feature, fmt)
             features.add(feature)
 
     return prune_features(features)
@@ -102,9 +104,11 @@ def extract_feature_by_feature(relations, F):
         feature1, feature2 = ffRule.match(fmt, token1, token2)
 
         if feature1 in F:
+            logger.debug('extract feature [%s] by ff relation [%s]', feature2, fmt)
             features.add(feature2)
 
         if feature2 in F:
+            logger.debug('extract feature [%s] by ff relation [%s]', feature1, fmt)
             features.add(feature1)
 
     return prune_features(features)
@@ -127,9 +131,11 @@ def extract_opinions_by_opinion(relations, O):
         opinion1, opinion2 = ooRule.match(fmt, token1, token2)
 
         if opinion1 in O:
+            logger.debug('extract opinion [%s] by oo relation [%s]', opinion2, fmt)
             opinions.add(opinion2)
 
         if opinion2 in O:
+            logger.debug('extract opinion [%s] by oo relation [%s]', opinion1, fmt)
             opinions.add(opinion1)
 
     return opinions
@@ -152,7 +158,7 @@ def extract_opinions_by_feature(relations, F):
         feature, opinion = foRule.match(fmt, token1, token2)
 
         if feature in F:
-            logger.debug('extract_opinions_by_feature: ' + opinion)
+            logger.debug('extract opinion [%s] by fo relation [%s]', opinion, fmt)
             opinions.add(opinion)
 
     return opinions
@@ -171,7 +177,7 @@ def prune_features(candidates):
     if len(fs) == 1 and len(fs[0]) > 1 and is_meaningful_word(fs[0]):
         features.add(fs[0])
     elif fs:
-        logging.debug('prune: [%s]不符合特征词条件' % ','.join(fs))
+        logger.debug('prune: [%s]不符合特征词条件' % ','.join(fs))
 
     '''处理短语特征词'''
     nps = [feature for feature in candidates if feature.find('_') != -1]
@@ -180,7 +186,7 @@ def prune_features(candidates):
         if is_feature_phrase(np):
             features.add(np)
         else:
-            logging.debug('prune: [%s]特征短语中有不符合的特征' % np)
+            logger.debug('prune: [%s]特征短语中有不符合的特征' % np)
 
     return features
 
@@ -216,12 +222,12 @@ def is_feature_phrase(np):
                 token = parser.pos(f + '。', cache=True)[0]
                 # token = parser.pos_with_cache(f + '。')[0]
                 if len(token.word) > 2:
-                    logging.debug('prune: [%s]-[%s]不是一个词' % (np, f))
+                    logger.debug('prune: [%s]-[%s]不是一个词' % (np, f))
                     return False
 
                 pos = token.pos
                 if pos not in {'v', 'n', 'a'}:
-                    logging.debug('prune: [%s]-[%s/%s]特词性不对' % (np, f, pos))
+                    logger.debug('prune: [%s]-[%s/%s]特词性不对' % (np, f, pos))
                     return False
 
             return True

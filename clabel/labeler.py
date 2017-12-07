@@ -8,12 +8,13 @@ from fastavro import reader as avro_reader
 from common import utils
 from common import clean
 
-from clabel.config import RESOURCE_DIR
-from clabel.pipeline import cluster
-from clabel.pipeline import double_propagation
 from clabel.pipeline import prune
-from clabel.pipeline import sentence_parser
+from clabel.pipeline import cluster
+from clabel.pipeline import relation_parse
 from clabel.revised.term import RevisedTerm
+from clabel.pipeline import double_propagation
+
+from clabel.config import RESOURCE_DIR
 
 from clabel.preprocessing import std
 
@@ -89,7 +90,7 @@ class LexiconExtractor(object):
 
         if not os.path.exists(self._relation_file):
             logger.info('句法解析')
-            sentence_parser.parse(self._clean_file, self._relation_file)
+            relation_parse.parse(self._clean_file, self._relation_file)
 
         logger.info('提取特征词/评价词, double propagation算法')
         S = self._iter_sentences_relations(self._relation_file)

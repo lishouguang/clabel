@@ -34,6 +34,9 @@ logger = logging.getLogger(__file__)
 
 
 class LexiconExtractor(object):
+    """
+    特征词库/评价词库提取器
+    """
 
     def __init__(self, workspace=os.path.join(RESOURCE_DIR, 'extractor'), threshold=0.00001):
         """
@@ -182,6 +185,9 @@ class LexiconExtractor(object):
 
 
 class LabelExtractor(object):
+    """
+    标签提取器
+    """
 
     def __init__(self,
                  feature_file,

@@ -435,7 +435,6 @@ class LabelExtractor(object):
 
 
 class Label(object):
-
     OPINION_MODIFIER_SEPARATOR = ','
 
     def __init__(self, feature, opinion, fmodifier='', omidifier=''):
@@ -452,12 +451,6 @@ class Label(object):
         self.nopinion = self.opinion
 
     @property
-    def feature_np(self):
-        if self.fmodifier:
-            return '%s_%s' % (self.fmodifier, self.feature)
-        return self.feature
-
-    @property
     def raw(self):
         return '%s_%s__(%s)%s %s' % (self.fmodifier, self.feature, self.omodifier, self.opinion, self.polar)
 
@@ -465,6 +458,12 @@ class Label(object):
     def normalized(self):
         # 1）特征标准化 2）程度词标准化 3）评价词标准化
         return '%s__(%s)%s %s' % (self.nfeature, self.omodifier2, self.nopinion, self.polar)
+
+    @property
+    def feature_np(self):
+        if self.fmodifier:
+            return '%s_%s' % (self.fmodifier, self.feature)
+        return self.feature
 
     def __str__(self):
         return '(%s)%s[%s]__(%s)%s[%s]' % (self.fmodifier, self.feature, self.nfeature, self.omodifier, self.opinion,

@@ -183,11 +183,30 @@ class LexiconExtractor(object):
 
 class LabelExtractor(object):
 
-    def __init__(self, feature_file, opinion_file, lexicon_dir=None, normalize=False, sentence_prob_threshold=-2):
+    def __init__(self,
+                 feature_file,
+                 opinion_file,
+                 normalize=False,
+                 sbd=False,
+                 wed=False,
+                 sent_prob_filter=False,
+                 sent_prob_threshold=-2):
+        """
+        :param feature_file: 特征词库文件
+        :param opinion_file: 评价词库文件
+        :param normalize: 是否对标签做规范化处理
+        :param sbd: 是否对评论文本进行自动断句
+        :param wed: 是或否对评论文本进行纠错/词语错误检测
+        :param sent_prob_filter: 是否对评论文本进行过滤，根据句子概率过滤
+        :param sent_prob_threshold:  评论文本无意义的概率阈值
+        """
         self._fTerm = RevisedTerm(feature_file)
         self._oTerm = RevisedTerm(opinion_file)
         self._normalize = normalize
-        self._sentence_prob_threshold = sentence_prob_threshold
+        self._sbd = sbd
+        self._wed = wed
+        self._sent_prob_filter = sent_prob_filter
+        self._sent_prob_threshold = sent_prob_threshold
 
         # 添加到用户自定义字典里
         add_user_words([(w, None, 'n') for w in self._fTerm.terms])
@@ -265,7 +284,7 @@ class LabelExtractor(object):
         :param txt:
         """
         # 添加标点，进行断句
-        if not re.findall(r'[，。？！?,]', txt):
+        if self._sbd and not re.findall(r'[，。？！?,]', txt):
             txt = std.sbd(txt)
 
         sents = []
@@ -278,7 +297,7 @@ class LabelExtractor(object):
                 continue
 
             '''纠错，只对中文纠错'''
-            if not re.findall(r'[a-zA-Z0-9]', sent):
+            if self._wed and not re.findall(r'[a-zA-Z0-9]', sent):
                 csent = std.wed(sent)
                 if sent != csent:
                     sent_prob = std.prob(sent)
@@ -290,9 +309,10 @@ class LabelExtractor(object):
                         logger.info('correct from [{}] to [{}]'.format(sent, csent))
 
             '''过滤无意义文本'''
-            prob = std.prob(sent)
-            if prob < self._sentence_prob_threshold:
-                continue
+            if self._sent_prob_filter:
+                prob = std.prob(sent)
+                if prob < self._sent_prob_threshold:
+                    continue
 
             sents.append(sent)
 

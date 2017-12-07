@@ -59,8 +59,6 @@ def _init_pos_lm(corpus_file):
     cutoff = 1
     tokens = get_tokens(corpus_file)
     vocab = build_vocabulary(cutoff, tokens)
-    print(vocab)
-    print(len(vocab))
 
     '''统计ngram'''
     order = 3
@@ -92,10 +90,8 @@ class PosLM(object):
             token = sentence[i+2]
 
             p = PosLM.next_token_prob(contexts, token)
-            print(contexts, token, p)
             probs.append(p)
 
-        print(probs)
         return 1
 
     @classmethod

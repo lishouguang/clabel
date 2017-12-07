@@ -15,10 +15,10 @@ from wed.wed2 import correct
 
 hanzi_model_file = os.path.join(LM_MODEL_DIR, 'hanzi.arpa')
 pnyin_model_file = os.path.join(LM_MODEL_DIR, 'pinyin.arpa')
-# lmModel = LM(hanzi_model_file, pnyin_model_file)
-hanziLM = HanziLM(hanzi_model_file)
 
-sbdModel = SBDModel.load(keras_model_file=os.path.join(SBD_DIR, 'sbd.keras.model'))
+# lmModel = LM(hanzi_model_file, pnyin_model_file)
+hanziLM = None
+sbdModel = None
 
 
 def extract_txt(txt):
@@ -37,6 +37,10 @@ def sbd(txt):
     :param txt:
     :return:
     """
+    global sbdModel
+    if sbdModel is None:
+        sbdModel = SBDModel.load(keras_model_file=os.path.join(SBD_DIR, 'sbd.keras.model'))
+
     sbd_txt = sbdModel.predict_txt(txt)
     return sbd_txt
 
@@ -47,6 +51,10 @@ def prob(txt):
     :param txt:
     :return:
     """
+    global hanziLM
+    if hanziLM is None:
+        hanziLM = HanziLM(hanzi_model_file)
+
     return hanziLM.predict_prob(txt)
 
 
